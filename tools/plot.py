@@ -6,14 +6,16 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-def plot(train, test, title, x_lable, y_label):
+def plot(train, test, title, x_lable, y_label, folder_path):
+    plt.title(title)
     plt.xlabel(x_lable)
     plt.ylabel(y_label)
 
-    plt.plot(train)
-    plt.plot(test)
-    plt.savefig('')
-   
+    plt.plot(train, 'b^-', label='train')
+    plt.plot(test, 'r^-', label='test')
 
-if __name__ == '__main__':
-    plot([1,2,3],[2,2,4],title='try',x_lable='epoch',y_label='accuracy')
+    # show grid
+    plt.grid(True) 
+    plt.legend(loc='upper left')
+    plt.savefig(folder_path+'/'+title)
+   

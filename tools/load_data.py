@@ -30,12 +30,7 @@ def load_chunk(amount=0, split_rate=0.9, chunk_type='ALL'):
     margin = int(length*split_rate)
 
     train_data = train_set[:margin]
-    X_train = [each[:-1] for each in train_data]
-    y_train = [each[-1] for each in train_data]
-
     dev_data = train_set[margin:]
-    X_dev = [each[:-1] for each in dev_data]
-    y_dev = [each[-1] for each in dev_data]
 
 
     test_set = open('../dataset/chunk/test.txt', 'r')
@@ -50,10 +45,9 @@ def load_chunk(amount=0, split_rate=0.9, chunk_type='ALL'):
                     chunk_tags[ind] = 'O'
             sentence[2] = tuple(chunk_tags)
 
-    X_test = [each[:-1] for each in test_set]
-    y_test = [each[-1] for each in test_set]
+    test_data = test_set
 
-    return X_train, y_train, X_dev, y_dev, X_test, y_test
+    return train_data, dev_data, test_data
 
 # sentence example:
 # ['He PR B-NP', 'is VB I-VP']
@@ -63,4 +57,4 @@ def str2tuple(sentence):
 
 if __name__ == '__main__':
     # load_chunk()
-    load_chunk(chunk_type='NP')
+    load_chunk(chunk_type='ALL')

@@ -1,23 +1,23 @@
-# from keras.models import Model
-# from keras.layers import Input, Masking, Dense, LSTM
-# from keras.layers import Dropout, merge, Bidirectional
-# from keras.layers.embeddings import Embedding
-# from keras.utils import np_utils
+from keras.models import Model
+from keras.layers import Input, Masking, Dense, LSTM
+from keras.layers import Dropout, merge, Bidirectional
+from keras.layers.embeddings import Embedding
+from keras.utils import np_utils
 
 import numpy as np
 
 import sys
 import math
 import os
+from datetime import datetime
 
 # add path
 sys.path.append('../')
 
-# import load_data
-# import senna_letter_prepare_data
-# import word_prepare_data
-from tools import load_data
 from tools import conf
+from tools import load_data
+from tools import prepare
+from tools import plot
 
 np.random.seed(0)
 
@@ -38,22 +38,22 @@ if not os.path.isdir('./fig/%s'%model_name):
     os.makedirs('./fig/%s'%model_name)
 
 # the data, shuffled and split between train and test sets
-(X_train, y_train, X_dev, y_dev, X_test, y_test) = load_data.load_chunk(amount=0, split_rate=split_rate)
+(train_data, dev_data, test_data) = load_data.load_chunk(amount=0, split_rate=split_rate)
 
-train_samples = len(y_train) + len(y_dev)
-dev_samples = len(y_test)
+train_samples = len(train_data) + len(dev_data)
+dev_samples = len(test_data)
 print('train shape:', train_samples)
 print('test shape:', dev_samples)
 
-word_train =[]
-word_dev = []
+word_train_data =[]
+word_dev_data = []
 # all train sample, combine train and dev
-[word_train.extend(list(each[0])) for each in X_train]
-[word_train.extend(list(each[0])) for each in X_dev]
-[word_test.extend(list(each[0])) for each in X_test]
+[word_train_data.extend(list(each[0])) for each in train_data]
+[word_train_data.extend(list(each[0])) for each in dev_data]
+[word_test_data.extend(list(each[0])) for each in test_data]
 
-word_train_samples=len(word_train)
-word_dev_samples=len(word_test)
+word_train_samples=len(word_train_data)
+word_dev_samples=len(word_test_data)
 print('word train shape:', word_train_samples)
 print('word test shape:', word_dev_samples)
 
@@ -75,89 +75,78 @@ print(model.summary())
 number_of_train_batches = int(math.ceil(float(word_train_samples)/word_batch_size))
 number_of_test_batches = int(math.ceil(float(word_test_samples)/word_batch_size))
 
+
+print('start train auto-encoder ...')
+
+
+folder_path = 'model/chunk/%s'%model_name
+if not os.path.isdir(folder_path):
+    os.makedirs(folder_path)
+
 accuracy = []
-all_error = 1000
+min_loss = 1000
 best_epoch = 0
 
-log = open('./log/%s/model_log.txt'%model_name, 'w')
+log = open('folder_path/model_log.txt', 'w')
 
-for epoch in range(word_nb_epoch):
-    print('#'*50)
-    print('Train epoch: ', epoch)
-    print('#'*50)
+all_train_loss = []
+all_test_loss = []
 
-    log.write('#'*50+'\n')
-    log.write('Train epoch: %d'%epoch+'\n')
-    log.write('#'*50+'\n')
+start_time = datetime.now()
+log.write('train start at %s\n'str(start_time))
+for epoch in range(nb_epoch):
 
-    epoch_loss = []
-    loss = 0
+    start = datetime.now()
 
-    np.random.shuffle(word_train)
+    log.write('epoch %d start at %s\n'%(epoch, str(start)))
+    train_loss = 0
+    test_loss = 0
+
+    np.random.shuffle(word_train_data)
 
     for i in range(number_of_train_batches):
-        train_batch = word_train[i*batch_size: (i+1)*batch_size]
-        X = word_prepare_data.prepare(batch=train_batch)
-        X = X.toarray()
+        train_batch = word_train_data[i*batch_size: (i+1)*batch_size]
+        X_train_batch = prepare.prepare_chunk_encoder(batch=train_batch)
+        X_train_batch = X_train_batch.toarray()
+        train_metrics = model.train_on_batch(X_train_batch, X_train_batch)
+        train_loss += train_metrics[0]
+    all_train_loss.append(train_loss)
 
-        # P_batch = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(P)])
-        # Y_batch = np.array([np_utils.to_categorical(y, 3) for y in Y])
-        metrics = model.train_on_batch(X, X)
-        loss += metrics[0]
-        print('='*5+'train batch %s'%str(i)+'='*5+'loss: ', metrics[0], '     accuracy: ', metrics[1])
-        log.write('='*5+'train batch %s'%str(i)+'='*5+'loss: %f'%metrics[0]+'     accuracy: %f'%metrics[1]+'\n')
+    for j in range(number_of_test_batches):
+        test_batch = word_test_data[j*batch_size: (j+1)*batch_size]
+        X_test_batch = prepare.prepare_chunk_encoder(batch=train_batch)
+        X_test_batch = X_test_batch.toarray()
+        test_metrics = model.test_on_batch(X_test_batch)
+        test_loss += test_metrics[0]
+    all_test_loss.append(test_loss)
 
-    plt.plot(loss)
-    plt.title('epoch_%d_loss'%epoch)
-    plt.savefig('./fig/%s/model_2_epoch_%d_loss'%(model_name, epoch))
-    plt.close()
-    
-    model_2.save('model/%s/model_2_epoch_%s.h5'%(model_name, str(epoch)), overwrite=True)
-    model_2_hidden.save('model/%s/model_2_hidden_epoch_%s.h5'%(model_name, str(epoch)), overwrite=True)
+    if test_loss<min_loss:
+        min_loss = all_error
+        best_epoch = epoch
 
-    print('\n')
-    print('#'*50)
-    print('Test epoch: ', epoch)
-    print('#'*50)
+    end = datetime.now()
 
-    log.write('#'*50+'\n')
-    log.write('Test epoch: %d'%epoch+'\n')
-    log.write('#'*50+'\n')
-    log.write('\n')
+    model.save('folder_path/model_epoch_%d.h5'%epoch, overwrite=True)
+    auto_encoder.save('folder_path/hidden_model_epoch_%d.h5'%epoch, overwrite=True)
 
-    error = 0
-    all_error = 0
+    print('-'*60+'\n')
+    print('epoch %d train over !\n'%epoch)
+    print('epoch %d train loss: %f\n'%(epoch, train_loss))
+    print('epoch %d test loss: %f\n'%(epoch, test_loss))
+    print('best epoch now: %d\n\n'%epoch)
 
-    for j in range(number_of_word_test_batches):
-        sample_list_test = word_test[j*word_batch_size: (j+1)*word_batch_size]
-        X_2 = word_prepare_data.prepare(sample_list=sample_list_test)
-        X_2 = X_2.toarray()
-        # P_batch = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[i], 44))])) for i,p in enumerate(P)])
-        prob = model_2.predict_on_batch(X_2)
-        # for i, x in enumerate(X_2):
-        error = ((X_2 - prob) ** 2).mean()
-        all_error += error
-        print('='*5+'test batch %s'%str(j)+'='*5+'accumulation accuracy: ', all_error)
-        log.write('='*5+'test batch %s'%str(j)+'='*5+'accumulation accuracy: %f'%all_error+'\n')
+    log.write('-'*60+'\n')
+    log.write('epoch %d train over !\n'%epoch)
+    log.write('epoch %d train loss: %f\n'%(epoch, train_loss))
+    log.write('epoch %d test loss: %f\n'%(epoch, test_loss))
+    log.write('best epoch now: %d\n\n'%epoch)
+    log.write('epoch %d end at %s\n'%(epoch, str(end)))
 
-    if all_error<best_accuracy_2:
-        best_accuracy_2 = all_error
-        best_epoch_2 = epoch
-        print('*'*50)
-        print('model_2_hidden best epoch', epoch)
-        print('*'*50)
-        model_2_best = model_2_hidden
-    accuracy.append(all_error)
-    print('='*10+'test error'+'='*10+': ', all_error)
-    print('\n\n'+'+'*100+'\n\n')
+end_time = datetime.now()
+log.write('train end at %s\n'str(end_time))
 
-    log.write('='*10+'test error'+'='*10+': %f'%all_error+'\n')
-    log.write('\n\n'+'+'*100+'\n\n')
+timedelta = end_time - start_time
+log.write('train cost time: %s'%str(timedelta))
 
-print('model 2 best epoch:', best_epoch_2)
+plot.plot(all_train_loss, all_test_loss, title='auto encoder loss', x_lable='epoch', y_label='loss', folder_path=folder_path)
 
-plt.plot(accuracy)
-plt.title('epoch test accuracy')
-plt.savefig('./fig/%s/model_2_epoch_test_accuracy'%model_name)
-
-print("model_2 train over!")
