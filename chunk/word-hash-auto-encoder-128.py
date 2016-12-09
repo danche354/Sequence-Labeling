@@ -13,6 +13,7 @@ from datetime import datetime
 
 # add path
 sys.path.append('../')
+sys.path.append('../tools')
 
 from tools import conf
 from tools import load_data
@@ -30,12 +31,9 @@ nb_epoch = conf.nb_epoch
 
 model_name = os.path.basename(__file__)[:-3]
 
-if not os.path.isdir('./log/%s'%model_name):
-    os.makedirs('./log/%s'%model_name)
-if not os.path.isdir('./model/%s'%model_name):
-    os.makedirs('./model/%s'%model_name)
-if not os.path.isdir('./fig/%s'%model_name):
-    os.makedirs('./fig/%s'%model_name)
+folder_path = 'model/%s'%model_name
+if not os.path.isdir(folder_path):
+    os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
 (train_data, dev_data, test_data) = load_data.load_chunk(amount=0, split_rate=split_rate)
@@ -44,18 +42,19 @@ train_samples = len(train_data) + len(dev_data)
 dev_samples = len(test_data)
 print('train shape:', train_samples)
 print('test shape:', dev_samples)
+print()
 
 word_train_data =[]
-word_dev_data = []
+word_test_data = []
 # all train sample, combine train and dev
 [word_train_data.extend(list(each[0])) for each in train_data]
 [word_train_data.extend(list(each[0])) for each in dev_data]
 [word_test_data.extend(list(each[0])) for each in test_data]
 
 word_train_samples=len(word_train_data)
-word_dev_samples=len(word_test_data)
+word_test_samples=len(word_test_data)
 print('word train shape:', word_train_samples)
-print('word test shape:', word_dev_samples)
+print('word test shape:', word_test_samples)
 
 
 # model structure
@@ -72,30 +71,27 @@ model.compile(loss='mse',
 print(model.summary())
 
 
-number_of_train_batches = int(math.ceil(float(word_train_samples)/word_batch_size))
-number_of_test_batches = int(math.ceil(float(word_test_samples)/word_batch_size))
+number_of_train_batches = int(math.ceil(float(word_train_samples)/batch_size))
+number_of_test_batches = int(math.ceil(float(word_test_samples)/batch_size))
 
 
 print('start train auto-encoder ...')
-
-
-folder_path = 'model/chunk/%s'%model_name
-if not os.path.isdir(folder_path):
-    os.makedirs(folder_path)
 
 accuracy = []
 min_loss = 1000
 best_epoch = 0
 
-log = open('folder_path/model_log.txt', 'w')
+log = open('%s/model_log.txt'%folder_path, 'w')
 
 all_train_loss = []
 all_test_loss = []
 
 start_time = datetime.now()
-log.write('train start at %s\n'str(start_time))
+log.write('train start at %s\n'%str(start_time))
 for epoch in range(nb_epoch):
 
+    print('-'*60)
+    print('epoch %d train start !'%epoch)
     start = datetime.now()
 
     log.write('epoch %d start at %s\n'%(epoch, str(start)))
@@ -126,14 +122,13 @@ for epoch in range(nb_epoch):
 
     end = datetime.now()
 
-    model.save('folder_path/model_epoch_%d.h5'%epoch, overwrite=True)
-    auto_encoder.save('folder_path/hidden_model_epoch_%d.h5'%epoch, overwrite=True)
+    model.save('%s/model_epoch_%d.h5'%(folder_path, epoch), overwrite=True)
+    auto_encoder.save('%s/hidden_model_epoch_%d.h5'%(folder_path, epoch), overwrite=True)
 
-    print('-'*60+'\n')
-    print('epoch %d train over !\n'%epoch)
-    print('epoch %d train loss: %f\n'%(epoch, train_loss))
-    print('epoch %d test loss: %f\n'%(epoch, test_loss))
-    print('best epoch now: %d\n\n'%epoch)
+    print('epoch %d train over !'%epoch)
+    print('epoch %d train loss: %f'%(epoch, train_loss))
+    print('epoch %d test loss: %f'%(epoch, test_loss))
+    print('best epoch now: %d\n'%epoch)
 
     log.write('-'*60+'\n')
     log.write('epoch %d train over !\n'%epoch)
@@ -143,7 +138,7 @@ for epoch in range(nb_epoch):
     log.write('epoch %d end at %s\n'%(epoch, str(end)))
 
 end_time = datetime.now()
-log.write('train end at %s\n'str(end_time))
+log.write('train end at %s\n'%str(end_time))
 
 timedelta = end_time - start_time
 log.write('train cost time: %s'%str(timedelta))

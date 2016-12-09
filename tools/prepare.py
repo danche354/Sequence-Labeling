@@ -25,7 +25,7 @@ POS = {'NN':0, 'IN':1, 'NNP':2, 'DT':3, 'NNS':4,
 
 def prepare_chunk_encoder(batch):
     X_hashing = hashing.sen2matrix(batch)
-    return np.array(X_hashing)
+    return X_hashing
 
 def prepare_chunk(batch, chunk_type='ALL', step_length=step_length, feature_length=feature_length):
     if chunk_type=='NP':

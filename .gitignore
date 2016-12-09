@@ -88,14 +88,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# model
-*.h5
-
-# fig
-*.png
-
-# log
-model_log.txt
-
-# additional
-.DS_Store
+# folder
+chunk/model/
+ner/model/
