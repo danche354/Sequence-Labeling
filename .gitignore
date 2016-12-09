@@ -96,3 +96,6 @@ ENV/
 
 # log
 model_log.txt
+
+# additional
+.DS_Store
