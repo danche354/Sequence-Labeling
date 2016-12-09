@@ -91,3 +91,6 @@ ENV/
 # folder
 chunk/model/
 ner/model/
+
+# additional
+.DS_Store
