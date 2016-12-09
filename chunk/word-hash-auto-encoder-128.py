@@ -75,7 +75,7 @@ number_of_train_batches = int(math.ceil(float(word_train_samples)/batch_size))
 number_of_test_batches = int(math.ceil(float(word_test_samples)/batch_size))
 
 
-print('start train auto-encoder ...')
+print('start train auto-encoder ...\n')
 
 accuracy = []
 min_loss = 1000
@@ -87,13 +87,16 @@ all_train_loss = []
 all_test_loss = []
 
 start_time = datetime.now()
-log.write('train start at %s\n'%str(start_time))
+print('train start at %s\n'%str(start_time))
+log.write('train start at %s\n\n'%str(start_time))
 for epoch in range(nb_epoch):
 
-    print('-'*60)
-    print('epoch %d train start !'%epoch)
     start = datetime.now()
 
+    print('-'*60)
+    print('epoch %d start at %s'%(epoch, str(start)))
+
+    log.write('-'*60+'\n')
     log.write('epoch %d start at %s\n'%(epoch, str(start)))
     train_loss = 0
     test_loss = 0
@@ -112,12 +115,12 @@ for epoch in range(nb_epoch):
         test_batch = word_test_data[j*batch_size: (j+1)*batch_size]
         X_test_batch = prepare.prepare_chunk_encoder(batch=train_batch)
         X_test_batch = X_test_batch.toarray()
-        test_metrics = model.test_on_batch(X_test_batch)
+        test_metrics = model.test_on_batch(X_test_batch, X_test_batch)
         test_loss += test_metrics[0]
     all_test_loss.append(test_loss)
 
     if test_loss<min_loss:
-        min_loss = all_error
+        min_loss = test_loss
         best_epoch = epoch
 
     end = datetime.now()
@@ -125,23 +128,25 @@ for epoch in range(nb_epoch):
     model.save('%s/model_epoch_%d.h5'%(folder_path, epoch), overwrite=True)
     auto_encoder.save('%s/hidden_model_epoch_%d.h5'%(folder_path, epoch), overwrite=True)
 
-    print('epoch %d train over !'%epoch)
+    print('epoch %d end at %s'%(epoch, str(end)))
     print('epoch %d train loss: %f'%(epoch, train_loss))
     print('epoch %d test loss: %f'%(epoch, test_loss))
-    print('best epoch now: %d\n'%epoch)
+    print('best epoch now: %d\n'%best_epoch)
 
-    log.write('-'*60+'\n')
-    log.write('epoch %d train over !\n'%epoch)
-    log.write('epoch %d train loss: %f\n'%(epoch, train_loss))
-    log.write('epoch %d test loss: %f\n'%(epoch, test_loss))
-    log.write('best epoch now: %d\n\n'%epoch)
     log.write('epoch %d end at %s\n'%(epoch, str(end)))
+    log.write('epoch %d train loss: %f\n'%(epoch, train_loss))
+    log.write('epoch %d test loss: %f\n\n'%(epoch, test_loss))
 
 end_time = datetime.now()
-log.write('train end at %s\n'%str(end_time))
+print('train end at %s\n'%str(end_time))
+log.write('train end at %s\n\n'%str(end_time))
 
 timedelta = end_time - start_time
-log.write('train cost time: %s'%str(timedelta))
+print('train cost time: %s\n'%str(timedelta))
+print('best epoch last: %d\n'%best_epoch)
+
+log.write('train cost time: %s\n\n'%str(timedelta))
+log.write('best epoch last: %d\n\n'%best_epoch)
 
 plot.plot(all_train_loss, all_test_loss, title='auto encoder loss', x_lable='epoch', y_label='loss', folder_path=folder_path)
 
