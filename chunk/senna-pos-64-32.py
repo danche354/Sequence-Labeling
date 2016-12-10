@@ -15,6 +15,8 @@ from datetime import datetime
 sys.path.append('../')
 sys.path.append('../tools')
 
+import train
+
 from tools import conf
 from tools import load_data
 from tools import prepare
@@ -26,7 +28,7 @@ np.random.seed(0)
 feature_length = conf.feature_length
 pos_length = conf.pos_length
 split_rate = conf.split_rate
-batch_size = conf.word_batch_size
+batch_size = conf.batch_size
 nb_epoch = conf.nb_epoch
 
 model_name = os.path.basename(__file__)[:-3]
@@ -38,45 +40,39 @@ if not os.path.isdir(folder_path):
 # the data, shuffled and split between train and test sets
 (train_data, dev_data, test_data) = load_data.load_chunk(amount=0, split_rate=split_rate, chunk_type='NP')
 
-train_samples = len(train_data) + len(dev_data)
-test_samples = len(test_data)
+train_samples = len(train_data)
+dev_samples = len(dev_data)
 print('train shape:', train_samples)
-print('test shape:', test_samples)
+print('dev shape:', dev_samples)
 print()
 
-word_train_data =[]
-word_test_data = []
-# all train sample, combine train and dev
-[word_train_data.extend(list(each[0])) for each in train_data]
-[word_train_data.extend(list(each[0])) for each in dev_data]
-[word_test_data.extend(list(each[0])) for each in test_data]
 
-word_train_samples=len(word_train_data)
-word_test_samples=len(word_test_data)
-print('word train shape:', word_train_samples)
-print('word test shape:', word_test_samples)
+senna_input = Input(shape=(step_length,))
+senna_embedding = Embedding(130002, 50, weights=[word_embedding], mask_zero=True, input_length=step_length)(query_input)
+pos_input = Input(shape=(step_length, pos_length))
+senna_pos_merge = merge([senna_embedding, pos_input], mode='concat')
+input_mask = Masking(mask_value=0)(senna_pos_merge)
+hidden_1 = Bidirectional(LSTM(64, return_sequences=True))(input_mask)
+dp_1 = Dropout(0.2)(hidden_1)
+hidden_2 = Bidirectional(LSTM(32, return_sequences=True))(dp_1)
+dp_2 = Dropout(0.2)(hidden_2)
+output = TimeDistributed(Dense(3, activation='softmax'))(dp_2)
+model = Model(input=[senna_input,pos_input], output=output)
 
-
-# model structure
-word_input = Input(shape=(feature_length, ))
-hidden = Dense(128, activation='tanh')(word_input)
-dp = Dropout(0.2)(hidden)
-word_output = Dense(feature_length)(dp)
-model = Model(input=word_input, output=word_output)
-auto_encoder = Model(input=word_input, output=hidden)
-model.compile(loss='mse',
-              optimizer='adam',
+model.compile(loss='categorical_crossentropy',
+              optimizer='rmsprop',
               metrics=['accuracy'])
 
 print(model.summary())
 
 
-number_of_train_batches = int(math.ceil(float(word_train_samples)/batch_size))
-number_of_test_batches = int(math.ceil(float(word_test_samples)/batch_size))
+number_of_train_batches = int(math.ceil(float(train_samples)/batch_size))
+number_of_test_batches = int(math.ceil(float(dev_samples)/batch_size))
 
 
 print('start train %s ...\n'%model_name)
 
+accuracy = []
 min_loss = 1000
 best_epoch = 0
 
@@ -147,5 +143,5 @@ print('best epoch last: %d\n'%best_epoch)
 log.write('train cost time: %s\n\n'%str(timedelta))
 log.write('best epoch last: %d\n\n'%best_epoch)
 
-plot.plot(all_train_loss, all_test_loss, title='%s loss'%model_name, x_lable='epoch', y1_label='train loss', y2_label='test loss', folder_path=folder_path)
+plot.plot(all_train_loss, all_test_loss, title='auto encoder loss', x_lable='epoch', y_label='loss', folder_path=folder_path)
 

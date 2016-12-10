@@ -38,7 +38,8 @@ split_rate = conf.split_rate
 batch_size = conf.word_batch_size
 nb_epoch = conf.nb_epoch
 
-def auto_encoder_start(model=model,
+def start(model=model,
+            task='chunk',
             model_name=model_name,
             nb_epoch=nb_epoch,
             X_train=X_train,
@@ -46,46 +47,82 @@ def auto_encoder_start(model=model,
             X_text=X_test,
             number_of_test_batches=number_of_test_batches):
 
-    folder_path = 'model/chunk/%s'%model_name
+    folder_path = task+'model/chunk/%s'%model_name
     if not os.path.isdir(folder_path):
         os.makedirs(folder_path)
 
-    accuracy = []
+    print('start train %s ...\n'%model_name)
+
     min_loss = 1000
     best_epoch = 0
 
-    log = open('folder_path/model_log.txt', 'w')
+    log = open('%s/model_log.txt'%folder_path, 'w')
 
     all_train_loss = []
-    all_test_loss = []
+    all_dev_loss = []
+    add_dev_accuracy = []
 
+    start_time = datetime.now()
+    print('train start at %s\n'%str(start_time))
+    log.write('train start at %s\n\n'%str(start_time))
     for epoch in range(nb_epoch):
+
+        start = datetime.now()
+
+        print('-'*60)
+        print('epoch %d start at %s'%(epoch, str(start)))
+
+        log.write('-'*60+'\n')
+        log.write('epoch %d start at %s\n'%(epoch, str(start)))
         train_loss = 0
         test_loss = 0
 
-        np.random.shuffle(X_train)
+        np.random.shuffle(word_train_data)
 
         for i in range(number_of_train_batches):
-            train_batch = X_train[i*batch_size: (i+1)*batch_size]
-            X_train_batch = prepare_data.prepare_chunk(batch=train_batch)
+            train_batch = word_train_data[i*batch_size: (i+1)*batch_size]
+            X_train_batch = prepare.prepare_chunk_encoder(batch=train_batch)
             X_train_batch = X_train_batch.toarray()
             train_metrics = model.train_on_batch(X_train_batch, X_train_batch)
             train_loss += train_metrics[0]
         all_train_loss.append(train_loss)
 
         for j in range(number_of_test_batches):
-            test_batch = X_test[j*batch_size: (j+1)*batch_size]
-            X_test_batch = prepare_data.prepare_chunk(batch=train_batch)
+            test_batch = word_test_data[j*batch_size: (j+1)*batch_size]
+            X_test_batch = prepare.prepare_chunk_encoder(batch=train_batch)
             X_test_batch = X_test_batch.toarray()
-            test_metrics = model.test_on_batch(X_test_batch)
+            test_metrics = model.test_on_batch(X_test_batch, X_test_batch)
             test_loss += test_metrics[0]
         all_test_loss.append(test_loss)
 
         if test_loss<min_loss:
-            min_loss = all_error
+            min_loss = test_loss
             best_epoch = epoch
 
-        print('epoch %d train over!'%epoch)
-        model.save('folder_path/model_epoch_%d.h5'%epoch, overwrite=True)
-        model_2_hidden.save('folder_path/hidden_model_epoch_%d.h5'%epoch, overwrite=True)
+        end = datetime.now()
+
+        model.save('%s/model_epoch_%d.h5'%(folder_path, epoch), overwrite=True)
+        auto_encoder.save('%s/hidden_model_epoch_%d.h5'%(folder_path, epoch), overwrite=True)
+
+        print('epoch %d end at %s'%(epoch, str(end)))
+        print('epoch %d train loss: %f'%(epoch, train_loss))
+        print('epoch %d test loss: %f'%(epoch, test_loss))
+        print('best epoch now: %d\n'%best_epoch)
+
+        log.write('epoch %d end at %s\n'%(epoch, str(end)))
+        log.write('epoch %d train loss: %f\n'%(epoch, train_loss))
+        log.write('epoch %d test loss: %f\n\n'%(epoch, test_loss))
+
+    end_time = datetime.now()
+    print('train end at %s\n'%str(end_time))
+    log.write('train end at %s\n\n'%str(end_time))
+
+    timedelta = end_time - start_time
+    print('train cost time: %s\n'%str(timedelta))
+    print('best epoch last: %d\n'%best_epoch)
+
+    log.write('train cost time: %s\n\n'%str(timedelta))
+    log.write('best epoch last: %d\n\n'%best_epoch)
+
+    plot.plot(all_train_loss, all_test_loss, title='%s loss'model_name, x_lable='epoch', y_label='loss', folder_path=folder_path)
 
