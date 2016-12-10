@@ -128,7 +128,7 @@ for epoch in range(nb_epoch):
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, 3) for each in label])
         # for loss
-        dev_metrics = model.train_on_batch([embed_index, pos], y)
+        dev_metrics = model.test_on_batch([embed_index, pos], y)
         dev_loss += dev_metrics[0]
 
         # for accuracy

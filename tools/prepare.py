@@ -43,12 +43,12 @@ def prepare_chunk(batch, chunk_type='NP', step_length=step_length, feature_lengt
     X_pos = []
     y = []
     sentence_length = []
-    sentence = []
+    sentences = []
 
     for sentence in batch:
         sentence_index = [word_dict.get(each.strip().lower(), emb_vocab+1) for each in sentence[0]]
         sen_matrix = hashing.sen2matrix(sentence[0])
-        sentence.append(sentence[0])
+        sentences.append(sentence[0])
         pos = [POS[each] for each in sentence[1]]
         label = [IOB[each] for each in sentence[2]]
         length = len(label)
@@ -63,7 +63,7 @@ def prepare_chunk(batch, chunk_type='NP', step_length=step_length, feature_lengt
         # record the sentence length for calculate accuracy
         sentence_length.append(length)
 
-    return np.array(embedding_index), np.array(X_hashing), np.array(X_pos), np.array(y), np.array(sentence_length), sentence
+    return np.array(embedding_index), np.array(X_hashing), np.array(X_pos), np.array(y), np.array(sentence_length), sentences
 
 
 
