@@ -55,12 +55,11 @@ def start(model=model,
 
     min_loss = 1000
     best_epoch = 0
-
-    log = open('%s/model_log.txt'%folder_path, 'w')
-
     all_train_loss = []
     all_dev_loss = []
-    add_dev_accuracy = []
+    all_dev_accuracy = []
+
+    log = open('%s/model_log.txt'%folder_path, 'w')
 
     start_time = datetime.now()
     print('train start at %s\n'%str(start_time))
