@@ -94,5 +94,6 @@ ner/model/
 
 # additional
 .DS_Store
-nohup.out
+*.out
+
 *.png
