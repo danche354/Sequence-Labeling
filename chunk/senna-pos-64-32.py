@@ -32,6 +32,7 @@ emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
 NP_length = conf.NP_length
 
+split_rate = conf.split_rate
 batch_size = conf.batch_size
 nb_epoch = conf.nb_epoch
 
@@ -42,7 +43,7 @@ if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
-train_data, dev_data = load_data.load_chunk(dataset='train.txt')
+train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
 
 train_samples = len(train_data)
 dev_samples = len(dev_data)
