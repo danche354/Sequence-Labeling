@@ -34,7 +34,7 @@ def load_chunk(dataset, amount=0, split_rate=0.9, chunk_type='NP'):
 
         return train_data, dev_data
 
-    elif dataset=='text.txt':
+    elif dataset=='test.txt':
         test_set = open('../dataset/chunk/test.txt', 'r')
         test_set = test_set.read().strip().split('\n\n')
 
