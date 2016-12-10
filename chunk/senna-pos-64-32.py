@@ -43,7 +43,7 @@ if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
-train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+train_data, dev_data = load_data.load_chunk(dataset='train.txt', amount=20, split_rate=split_rate)
 
 train_samples = len(train_data)
 dev_samples = len(dev_data)
@@ -138,6 +138,7 @@ for epoch in range(nb_epoch):
             correct_predict += np.sum(predict_label[:l]==label[i][:l])
         all_predict += np.sum(length)
     epcoh_accuracy = float(correct_predict)/all_predict
+    print(epcoh_accuracy)
     all_dev_accuracy.append(epcoh_accuracy)
 
     all_dev_loss.append(dev_loss)
@@ -158,9 +159,9 @@ for epoch in range(nb_epoch):
 
     log.write('epoch %d end at %s\n'%(epoch, str(end)))
     log.write('epoch %d train loss: %f\n'%(epoch, train_loss))
-    log.write('epoch %d dev loss: %f\n\n'%(epoch, dev_loss))
-    log.write('epoch %d dev accuracy: %f'%(epoch, epcoh_accuracy))
-    log.write('best epoch now: %d\n'%best_epoch)
+    log.write('epoch %d dev loss: %f\n'%(epoch, dev_loss))
+    log.write('epoch %d dev accuracy: %f\n'%(epoch, epcoh_accuracy))
+    log.write('best epoch now: %d\n\n'%best_epoch)
 
 
 end_time = datetime.now()
