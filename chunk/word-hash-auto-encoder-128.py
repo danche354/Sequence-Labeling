@@ -25,6 +25,7 @@ np.random.seed(0)
 # train hyperparameters
 feature_length = conf.feature_length
 pos_length = conf.pos_length
+
 split_rate = conf.split_rate
 batch_size = conf.word_batch_size
 nb_epoch = conf.nb_epoch
@@ -36,7 +37,8 @@ if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
-(train_data, dev_data, test_data) = load_data.load_chunk(amount=0, split_rate=split_rate, chunk_type='NP')
+train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+test_data = load_data.load_chunk(dataset='test.txt')
 
 train_samples = len(train_data) + len(dev_data)
 test_samples = len(test_data)
@@ -146,5 +148,5 @@ print('best epoch last: %d\n'%best_epoch)
 log.write('train cost time: %s\n\n'%str(timedelta))
 log.write('best epoch last: %d\n\n'%best_epoch)
 
-plot.plot(all_train_loss, all_test_loss, title='%s loss'%model_name, x_lable='epoch', y1_label='train loss', y2_label='test loss', folder_path=folder_path)
+plot.plot_loss(all_train_loss, all_test_loss, folder_path=folder_path, title='%s'%model_name, x_lable='epoch', y1_label='train loss', y2_label='test loss')
 

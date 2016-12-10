@@ -3,51 +3,53 @@ load datasets
 '''
 
 import numpy as np
+import conf
 
 np.random.seed(1337)
 
-def load_chunk(amount=0, split_rate=0.9, chunk_type='ALL'):
+def load_chunk(dataset, amount=0, split_rate=0.9, chunk_type='NP'):
+    if dataset=='train.txt':
+        train_set = open('../dataset/chunk/train.txt', 'r')
+        train_set = train_set.read().strip().split('\n\n')
 
-    train_set = open('../dataset/chunk/train.txt', 'r')
-    train_set = train_set.read().strip().split('\n\n')
+        if amount!=0:
+            train_set = train_set[:amount]
 
-    if amount!=0:
-        train_set = train_set[:amount]
+        np.random.shuffle(train_set)
 
-    np.random.shuffle(train_set)
+        train_set = list(map(str2tuple, train_set))
+        if chunk_type=='NP':
+            for sentence in train_set:
+                chunk_tags = list(sentence[2])
+                for ind, chunk in enumerate(chunk_tags):
+                    if chunk!='B-NP' and chunk!='I-NP':
+                        chunk_tags[ind] = 'O'
+                sentence[2] = tuple(chunk_tags)
 
-    train_set = list(map(str2tuple, train_set))
-    if chunk_type=='NP':
-        for sentence in train_set:
-            chunk_tags = list(sentence[2])
-            for ind, chunk in enumerate(chunk_tags):
-                if chunk!='B-NP' and chunk!='I-NP':
-                    chunk_tags[ind] = 'O'
-            sentence[2] = tuple(chunk_tags)
+        length = len(train_set)
+        margin = int(length*split_rate)
 
+        train_data = train_set[:margin]
+        dev_data = train_set[margin:]
 
-    length = len(train_set)
-    margin = int(length*split_rate)
+        return train_data, dev_data
 
-    train_data = train_set[:margin]
-    dev_data = train_set[margin:]
+    elif dataset=='text.txt':
+        test_set = open('../dataset/chunk/test.txt', 'r')
+        test_set = test_set.read().strip().split('\n\n')
 
+        test_set = list(map(str2tuple, test_set))
+        if chunk_type=='NP':
+            for sentence in test_set:
+                chunk_tags = list(sentence[2])
+                for ind, chunk in enumerate(chunk_tags):
+                    if chunk!='B-NP' and chunk!='I-NP':
+                        chunk_tags[ind] = 'O'
+                sentence[2] = tuple(chunk_tags)
 
-    test_set = open('../dataset/chunk/test.txt', 'r')
-    test_set = test_set.read().strip().split('\n\n')
+        test_data = test_set
 
-    test_set = list(map(str2tuple, test_set))
-    if chunk_type=='NP':
-        for sentence in test_set:
-            chunk_tags = list(sentence[2])
-            for ind, chunk in enumerate(chunk_tags):
-                if chunk!='B-NP' and chunk!='I-NP':
-                    chunk_tags[ind] = 'O'
-            sentence[2] = tuple(chunk_tags)
-
-    test_data = test_set
-
-    return train_data, dev_data, test_data
+        return test_data
 
 # sentence example:
 # ['He PR B-NP', 'is VB I-VP']
