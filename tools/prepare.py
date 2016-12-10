@@ -1,32 +1,18 @@
 
-import json
 import numpy as np
 
 import hashing
 import conf
 
+word_dict = conf.word_dict
+
 step_length = conf.step_length
 feature_length = conf.feature_length
 emb_vocab = conf.senna_vocab
 
-NP_IOB = {'B-NP':0, 'I-NP':1, 'O':2}
-ALL_IOB = {'B-ADVP':0, 'I-ADVP':1, 'B-ADJP':2, 'I-ADJP':3,
-    'B-CONJP':4, 'I-CONJP':5, 'B-INTJ':6, 'I-INTJ':7,
-    'B-LST':8, 'I-LST':9, 'B-NP':10, 'I-NP':11,
-    'B-PP':12, 'I-PP':13, 'B-PRT':14, 'I-PRT':15,
-    'B-SBAR':16, 'I-SBAR':17, 'B-UCP':18,
-    'I-UCP':19, 'B-VP':20, 'I-VP':21, 'O':22}
-
-POS = {'NN':0, 'IN':1, 'NNP':2, 'DT':3, 'NNS':4,
-    'JJ':5, ',':6, '.':7, 'CD':8, 'VBD':9, 'RB':10, 'VB':11,
-    'CC':12, 'TO':13, 'VBN':14, 'VBZ':15, 'PRP':16, 'VBG':17,
-    'VBP':18, 'MD':19, 'PRP$':20, 'POS':21, '$':22, '``':23,
-    "''":24, ':':25, 'WDT':26, 'JJR':27, 'WP':28, 'WRB':29,
-    'NNPS':30, 'JJS':31, 'RBR':32, ')':33, '(':34, 'EX':35,
-    'RBS':36, 'RP':37, 'PDT':38, '#':39, 'FW':40, 'WP$':41, 'UH':42, 'SYM':43}
-
-with open('../preprocessing/senna/senna.json') as j:
-    word_dict = json.load(j)
+ALL_IOB = conf.ALL_IOB_encode
+NP_IOB = conf.NP_IOB_encode
+POS = conf.POS_encode
 
 def prepare_chunk_encoder(batch):
     X_hashing = hashing.sen2matrix(batch)
