@@ -113,7 +113,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_test_batches):
         test_batch = word_test_data[j*batch_size: (j+1)*batch_size]
-        X_test_batch = prepare.prepare_chunk_encoder(batch=train_batch)
+        X_test_batch = prepare.prepare_chunk_encoder(batch=test_batch)
         X_test_batch = X_test_batch.toarray()
         test_metrics = model.test_on_batch(X_test_batch, X_test_batch)
         test_loss += test_metrics[0]

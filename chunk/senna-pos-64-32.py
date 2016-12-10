@@ -123,7 +123,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, hashing, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
+        embed_index, hashing, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, 3) for each in label])
