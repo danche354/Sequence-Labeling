@@ -113,7 +113,7 @@ for epoch in range(nb_epoch):
         dev_batch = word_dev_data[j*batch_size: (j+1)*batch_size]
         X_dev_batch = prepare.prepare_chunk_encoder(batch=dev_batch)
         X_dev_batch = X_dev_batch.toarray()
-        dev_metrics = model.dev_on_batch(X_dev_batch, X_dev_batch)
+        dev_metrics = model.test_on_batch(X_dev_batch, X_dev_batch)
         dev_loss += dev_metrics[0]
     all_dev_loss.append(dev_loss)
 
