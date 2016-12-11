@@ -3,8 +3,6 @@ letter-3-gram hashing
 convert word or sentence to letter-3-gram representation matrix
 '''
 
-import re
-
 import numpy as np
 from scipy.sparse import csc_matrix
 
@@ -12,10 +10,6 @@ import conf
 
 feature_length = conf.feature_length
 l3g_dict = conf.l3g_dict
-
-letter = re.compile(r'[a-z]')
-
-digit
 
 def pre_process(word_list):
     word_list = ['#'+word.strip()+'#' for word in word_list]
