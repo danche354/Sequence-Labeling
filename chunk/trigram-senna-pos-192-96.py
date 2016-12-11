@@ -25,7 +25,6 @@ from tools import plot
 np.random.seed(0)
 
 # train hyperparameters
-feature_length = conf.feature_length
 step_length = conf.step_length
 pos_length = conf.pos_length
 
