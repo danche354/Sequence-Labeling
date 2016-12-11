@@ -6,6 +6,8 @@ import json
 with open('../preprocessing/senna/senna.json') as j:
     word_dict = json.load(j)
 
+l3g_dict = {}
+
 with open('../preprocessing//l3g/l3g.txt') as f:
     l3g_list = f.read().strip().split('\n')
     for i, each in enumerate(l3g_list):
