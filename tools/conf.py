@@ -4,7 +4,7 @@ config file
 import json
 
 with open('../preprocessing/senna/senna.json') as j:
-    word_dict = json.load(j)
+    senna_dict = json.load(j)
 
 l3g_dict = {}
 
@@ -17,6 +17,10 @@ step_length = 80
 feature_length = 8146
 senna_length = 50
 senna_vocab = 130000
+
+auto_length = 128
+auto_vocab = 
+
 pos_length = 44
 
 NP_length = 3

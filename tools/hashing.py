@@ -13,15 +13,8 @@ import conf
 feature_length = conf.feature_length
 l3g_dict = conf.l3g_dict
 
-def pre_process(word_list, trigram=False):
-    if trigram:
-        # add start and end mark
-        wrapper = ['#']
-        wrapper.extend(word_list)
-        wrapper.append('#')
-        word_list = ['#'+word.strip()+'#' for word in wrapper]
-    else:
-        word_list = ['#'+word.strip()+'#' for word in word_list]
+def pre_process(word_list):
+    word_list = ['#'+word.strip()+'#' for word in word_list]
     return word_list
 
 def word2index(word_list):
@@ -37,11 +30,8 @@ def word2index(word_list):
                 sen_matrix[i, -1] += 1
     return sen_matrix
 
-def sen2matrix(word_list, trigram=False):
-    if trigram:
-        word_list = pre_process(word_list, trigram)
-    else:
-        word_list = pre_process(word_list)
+def sen2matrix(word_list):
+    word_list = pre_process(word_list)
     sen_matrix = word2index(word_list)
     sparse_sen_matrix = csc_matrix(sen_matrix)
     return sparse_sen_matrix

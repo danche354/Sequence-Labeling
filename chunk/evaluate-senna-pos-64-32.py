@@ -39,14 +39,14 @@ tagger = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, hashing, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
+    embed_index, auto_encoder_index, hashing, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
 
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
     prob = model.predict_on_batch([embed_index, pos])
 
     for i, l in enumerate(length):
         predict_label = np_utils.categorical_probas_to_classes(prob[i])
-        chunktags = [IBO[j] for j in predict_label][:l]
+        chunktags = [IOB[j] for j in predict_label][:l]
 
     word_pos_chunk = list(zip(*each))
 

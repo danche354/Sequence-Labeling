@@ -32,6 +32,9 @@ pos_length = conf.pos_length
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
 
+auto_vocab = conf.auto_vocab
+auto_length = conf.auto_length
+
 NP_length = conf.NP_length
 
 split_rate = conf.split_rate
@@ -57,17 +60,23 @@ word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=
 word_embedding = word_embedding.values
 word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.randn(1,emb_length)])
 
+auto_embedding = pd.read_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
+auto_embedding = auto_embedding.values
+auto_embedding = np.concatenate([np.zeros((1,auto_length)),word_embedding, np.random.randn(1,auto_length)])
+
 embed_index_input = Input(shape=(step_length,))
 embedding = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input)
+auto_index_input = Input(shape=(step_length,))
+auto_embedding = Embedding(auto_vocab+2, auto_length, weights=[auto_embedding], mask_zero=True, input_length=step_length)(auto_index_input)
 pos_input = Input(shape=(step_length, pos_length))
-senna_pos_merge = merge([embedding, pos_input], mode='concat')
-input_mask = Masking(mask_value=0)(senna_pos_merge)
-hidden_1 = Bidirectional(LSTM(64, return_sequences=True))(input_mask)
+senna_hash_pos_merge = merge([embedding, auto_embedding, pos_input], mode='concat')
+input_mask = Masking(mask_value=0)(senna_hash_pos_merge)
+hidden_1 = Bidirectional(LSTM(128, return_sequences=True))(input_mask)
 dp_1 = Dropout(0.2)(hidden_1)
-hidden_2 = Bidirectional(LSTM(32, return_sequences=True))(dp_1)
+hidden_2 = Bidirectional(LSTM(64, return_sequences=True))(dp_1)
 dp_2 = Dropout(0.2)(hidden_2)
 output = TimeDistributed(Dense(NP_length, activation='softmax'))(dp_2)
-model = Model(input=[embed_index_input,pos_input], output=output)
+model = Model(input=[embed_index_input,auto_index_input,pos_input], output=output)
 
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
@@ -116,7 +125,7 @@ for epoch in range(nb_epoch):
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, 3) for each in label])
 
-        train_metrics = model.train_on_batch([embed_index, pos], y)
+        train_metrics = model.train_on_batch([embed_index, auto_encoder_index, pos], y)
         train_loss += train_metrics[0]
     all_train_loss.append(train_loss)
 
@@ -130,11 +139,11 @@ for epoch in range(nb_epoch):
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, 3) for each in label])
         # for loss
-        dev_metrics = model.test_on_batch([embed_index, pos], y)
+        dev_metrics = model.test_on_batch([embed_index, auto_encoder_index, pos], y)
         dev_loss += dev_metrics[0]
 
         # for accuracy
-        prob = model.predict_on_batch([embed_index, pos])
+        prob = model.predict_on_batch([embed_index, auto_encoder_index, pos])
         for i, l in enumerate(length):
             predict_label = np_utils.categorical_probas_to_classes(prob[i])
             correct_predict += np.sum(predict_label[:l]==label[i][:l])
