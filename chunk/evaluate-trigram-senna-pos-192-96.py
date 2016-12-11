@@ -44,9 +44,9 @@ for each in test_data:
     embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each], trigram=True)
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
     
-    embed_index_1 = embed_index[:-2]
-    embed_index_2 = embed_index[1:-1]
-    embed_index_3 = embed_index[2:]
+    embed_index_1 = embed_index[:,:-2]
+    embed_index_2 = embed_index[:,1:-1]
+    embed_index_3 = embed_index[:,2:]
     pos = [np.concatenate([np_utils.to_categorical(p[:-2],pos_length),np_utils.to_categorical(p[1:-1],pos_length),np_utils.to_categorical(p[2:],pos_length)],axis=1) for p in pos]
     pos = np.array([(np.concatenate([p, np.zeros((step_length-length[l], pos_length*3))])) for l,p in enumerate(pos)])
 
