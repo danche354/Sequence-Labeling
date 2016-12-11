@@ -6,6 +6,8 @@ import numpy as np
 import sys
 import os
 
+# change dir to train file, for environment
+os.chdir('../../chunk/')
 
 # add path
 sys.path.append('../')
@@ -14,16 +16,16 @@ sys.path.append('../tools')
 from tools import load_data
 from tools import prepare
 
-model_path = '../../chunk/model/word-hash-auto-encoder-128/hidden_model_epoch_15.h5'
+model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_19.h5'
 
-w = open('./conll2000-word.lst', 'w')
+w = open('../preprocessing/auto-encoder/conll2000-word.lst', 'w')
 embeddings = pd.DataFrame(columns=range(128))
 
 print('loading model...')
 encoder = load_model(model_path)
 print('loading model finished.')
 
-train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=0.9)
 test_data = load_data.load_chunk(dataset='test.txt')
 
 all_word =[]
@@ -44,6 +46,6 @@ for i, word in enumerate(all_word):
     normalization = (representation-np.min(representation))/(np.max(representation)-np.min(representation))
     embeddings.loc[i] = normalization[0]
 
-embeddings.to_csv('auto-encoder-embeddings.txt', sep=' ',header=False,index=False)
+embeddings.to_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', sep=' ',header=False,index=False)
 w.close()
 

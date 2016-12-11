@@ -18,8 +18,8 @@ NP_IOB = conf.NP_IOB_encode
 POS = conf.POS_encode
 
 def prepare_chunk_encoder(batch):
-    hashing = hashing.sen2matrix(batch)
-    return hashing
+    word_hashing = hashing.sen2matrix(batch)
+    return word_hashing
 
 def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length, feature_length=feature_length):
     if chunk_type=='ALL':
@@ -48,10 +48,10 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
         _auto_encoder_index = [auto_encoder_dict.get(each.strip().lower(), auto_vocab+1) for each in sequence]
-        _sentence.append(sentence[0])
+        sentences.append(sentence[0])
         _pos = [POS[each] for each in sequence_pos]
         _label = [IOB[each] for each in sentence[2]]
-        length = len(label)
+        length = len(_label)
 
         _label.extend([0]*(step_length-length))
         _embedding_index.extend([0]*(step_length-length))
