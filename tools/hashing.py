@@ -9,9 +9,9 @@ import numpy as np
 from scipy.sparse import csc_matrix
 
 import conf
-from load_l3g import l3g_dict
 
 feature_length = conf.feature_length
+l3g_dict = conf.l3g_dict
 
 def pre_process(word_list, trigram=False):
     if trigram:
@@ -31,7 +31,10 @@ def word2index(word_list):
         length = len(word) - 2
         lword = word.lower()
         for j in range(length):
-            sen_matrix[i, l3g_dict[lword[j: j+3]]] += 1
+            try:
+                sen_matrix[i, l3g_dict[lword[j: j+3]]] += 1
+            except Exception:
+                sen_matrix[i, -1] += 1
     return sen_matrix
 
 def sen2matrix(word_list, trigram=False):

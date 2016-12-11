@@ -6,8 +6,13 @@ import json
 with open('../preprocessing/senna/senna.json') as j:
     word_dict = json.load(j)
 
+with open('../preprocessing//l3g/l3g.txt') as f:
+    l3g_list = f.read().strip().split('\n')
+    for i, each in enumerate(l3g_list):
+        l3g_dict[each] = i
+
 step_length = 80
-feature_length = 8616
+feature_length = 8146
 senna_length = 50
 senna_vocab = 130000
 pos_length = 44

@@ -36,27 +36,25 @@ folder_path = 'model/%s'%model_name
 if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
-# the data, shuffled and split between train and test sets
+# the data, shuffled and split between train and dev sets
 train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
-test_data = load_data.load_chunk(dataset='test.txt')
 
-train_samples = len(train_data) + len(dev_data)
-test_samples = len(test_data)
+train_samples = len(train_data)
+dev_samples = len(dev_data)
 print('train shape:', train_samples)
-print('test shape:', test_samples)
+print('dev shape:', dev_samples)
 print()
 
 word_train_data =[]
-word_test_data = []
+word_dev_data = []
 # all train sample, combine train and dev
 [word_train_data.extend(list(each[0])) for each in train_data]
-[word_train_data.extend(list(each[0])) for each in dev_data]
-[word_test_data.extend(list(each[0])) for each in test_data]
+[word_dev_data.extend(list(each[0])) for each in dev_data]
 
 word_train_samples=len(word_train_data)
-word_test_samples=len(word_test_data)
+word_dev_samples=len(word_dev_data)
 print('word train shape:', word_train_samples)
-print('word test shape:', word_test_samples)
+print('word dev shape:', word_dev_samples)
 
 
 # model structure
@@ -74,7 +72,7 @@ print(model.summary())
 
 
 number_of_train_batches = int(math.ceil(float(word_train_samples)/batch_size))
-number_of_test_batches = int(math.ceil(float(word_test_samples)/batch_size))
+number_of_dev_batches = int(math.ceil(float(word_dev_samples)/batch_size))
 
 
 print('start train %s ...\n'%model_name)
@@ -82,7 +80,7 @@ print('start train %s ...\n'%model_name)
 min_loss = 1000
 best_epoch = 0
 all_train_loss = []
-all_test_loss = []
+all_dev_loss = []
 
 log = open('%s/model_log.txt'%folder_path, 'w')
 
@@ -99,7 +97,7 @@ for epoch in range(nb_epoch):
     log.write('-'*60+'\n')
     log.write('epoch %d start at %s\n'%(epoch, str(start)))
     train_loss = 0
-    test_loss = 0
+    dev_loss = 0
 
     np.random.shuffle(word_train_data)
 
@@ -111,16 +109,16 @@ for epoch in range(nb_epoch):
         train_loss += train_metrics[0]
     all_train_loss.append(train_loss)
 
-    for j in range(number_of_test_batches):
-        test_batch = word_test_data[j*batch_size: (j+1)*batch_size]
-        X_test_batch = prepare.prepare_chunk_encoder(batch=test_batch)
-        X_test_batch = X_test_batch.toarray()
-        test_metrics = model.test_on_batch(X_test_batch, X_test_batch)
-        test_loss += test_metrics[0]
-    all_test_loss.append(test_loss)
+    for j in range(number_of_dev_batches):
+        dev_batch = word_dev_data[j*batch_size: (j+1)*batch_size]
+        X_dev_batch = prepare.prepare_chunk_encoder(batch=dev_batch)
+        X_dev_batch = X_dev_batch.toarray()
+        dev_metrics = model.dev_on_batch(X_dev_batch, X_dev_batch)
+        dev_loss += dev_metrics[0]
+    all_dev_loss.append(dev_loss)
 
-    if test_loss<min_loss:
-        min_loss = test_loss
+    if dev_loss<min_loss:
+        min_loss = dev_loss
         best_epoch = epoch
 
     end = datetime.now()
@@ -130,12 +128,12 @@ for epoch in range(nb_epoch):
 
     print('epoch %d end at %s'%(epoch, str(end)))
     print('epoch %d train loss: %f'%(epoch, train_loss))
-    print('epoch %d test loss: %f'%(epoch, test_loss))
+    print('epoch %d dev loss: %f'%(epoch, dev_loss))
     print('best epoch now: %d\n'%best_epoch)
 
     log.write('epoch %d end at %s\n'%(epoch, str(end)))
     log.write('epoch %d train loss: %f\n'%(epoch, train_loss))
-    log.write('epoch %d test loss: %f\n\n'%(epoch, test_loss))
+    log.write('epoch %d dev loss: %f\n\n'%(epoch, dev_loss))
 
 end_time = datetime.now()
 print('train end at %s\n'%str(end_time))
@@ -148,5 +146,5 @@ print('best epoch last: %d\n'%best_epoch)
 log.write('train cost time: %s\n\n'%str(timedelta))
 log.write('best epoch last: %d\n\n'%best_epoch)
 
-plot.plot_loss(all_train_loss, all_test_loss, folder_path=folder_path, title='%s'%model_name, x_lable='epoch', y1_label='train loss', y2_label='test loss')
+plot.plot_loss(all_train_loss, all_dev_loss, folder_path=folder_path, title='%s'%model_name)
 
