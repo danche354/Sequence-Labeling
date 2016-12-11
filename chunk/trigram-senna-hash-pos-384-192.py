@@ -31,8 +31,8 @@ pos_length = conf.pos_length
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
 
-auto_vocab = conf.auto_vocab
-auto_length = conf.auto_length
+hash_vocab = conf.hash_vocab
+hash_length = conf.hash_length
 
 output_length = conf.NP_length
 
@@ -59,9 +59,9 @@ word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=
 word_embedding = word_embedding.values
 word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.randn(1,emb_length)])
 
-auto_embedding = pd.read_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
-auto_embedding = auto_embedding.values
-auto_embedding = np.concatenate([np.zeros((1,auto_length)),auto_embedding, np.random.randn(1,auto_length)])
+hash_embedding = pd.read_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
+hash_embedding = hash_embedding.values
+hash_embedding = np.concatenate([np.zeros((1,hash_length)),hash_embedding, np.random.randn(1,hash_length)])
 
 embed_index_input_1 = Input(shape=(step_length,))
 embed_index_input_2 = Input(shape=(step_length,))
@@ -70,23 +70,23 @@ embedding_1 = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_
 embedding_2 = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input_2)
 embedding_3 = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input_3)
 
-auto_index_input_1 = Input(shape=(step_length,))
-auto_index_input_2 = Input(shape=(step_length,))
-auto_index_input_3 = Input(shape=(step_length,))
-auto_embedding_1 = Embedding(auto_vocab+2, auto_length, weights=[auto_embedding], mask_zero=True, input_length=step_length)(auto_index_input_1)
-auto_embedding_2 = Embedding(auto_vocab+2, auto_length, weights=[auto_embedding], mask_zero=True, input_length=step_length)(auto_index_input_2)
-auto_embedding_3 = Embedding(auto_vocab+2, auto_length, weights=[auto_embedding], mask_zero=True, input_length=step_length)(auto_index_input_3)
+hash_index_input_1 = Input(shape=(step_length,))
+hash_index_input_2 = Input(shape=(step_length,))
+hash_index_input_3 = Input(shape=(step_length,))
+hash_embedding_1 = Embedding(hash_vocab+2, hash_length, weights=[hash_embedding], mask_zero=True, input_length=step_length)(hash_index_input_1)
+hash_embedding_2 = Embedding(hash_vocab+2, hash_length, weights=[hash_embedding], mask_zero=True, input_length=step_length)(hash_index_input_2)
+hash_embedding_3 = Embedding(hash_vocab+2, hash_length, weights=[hash_embedding], mask_zero=True, input_length=step_length)(hash_index_input_3)
 
 pos_input = Input(shape=(step_length, pos_length*3))
 
-senna_hash_pos_merge = merge([embedding_1,embedding_2,embedding_3,auto_embedding_1,auto_embedding_2,auto_embedding_3,pos_input], mode='concat')
+senna_hash_pos_merge = merge([embedding_1,embedding_2,embedding_3,hash_embedding_1,hash_embedding_2,hash_embedding_3,pos_input], mode='concat')
 input_mask = Masking(mask_value=0)(senna_hash_pos_merge)
 hidden_1 = Bidirectional(LSTM(384, return_sequences=True))(input_mask)
 dp_1 = Dropout(0.2)(hidden_1)
 hidden_2 = Bidirectional(LSTM(192, return_sequences=True))(dp_1)
 dp_2 = Dropout(0.2)(hidden_2)
 output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
-model = Model(input=[embed_index_input_1,embed_index_input_2,embed_index_input_3,auto_index_input_1,auto_index_input_2,auto_index_input_3,pos_input], output=output)
+model = Model(input=[embed_index_input_1,embed_index_input_2,embed_index_input_3,hash_index_input_1,hash_index_input_2,hash_index_input_3,pos_input], output=output)
 
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
@@ -130,15 +130,15 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch, trigram=True)
+        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch, trigram=True)
         
         embed_index_1 = embed_index[:,:-2]
         embed_index_2 = embed_index[:,1:-1]
         embed_index_3 = embed_index[:,2:]
 
-        auto_encoder_index_1 = auto_encoder_index[:,:-2]
-        auto_encoder_index_2 = auto_encoder_index[:,1:-1]
-        auto_encoder_index_3 = auto_encoder_index[:,2:]
+        hash_index_1 = hash_index[:,:-2]
+        hash_index_2 = hash_index[:,1:-1]
+        hash_index_3 = hash_index[:,2:]
        
         pos = [np.concatenate([np_utils.to_categorical(p[:-2],pos_length),np_utils.to_categorical(p[1:-1],pos_length),np_utils.to_categorical(p[2:],pos_length)],axis=1) for p in pos]
         pos = np.array([(np.concatenate([p, np.zeros((step_length-length[l], pos_length*3))])) for l,p in enumerate(pos)])
@@ -146,7 +146,7 @@ for epoch in range(nb_epoch):
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
 
         train_metrics = model.train_on_batch([embed_index_1,embed_index_2,embed_index_3,\
-                                                auto_encoder_index_1,auto_encoder_index_2,auto_encoder_index_3,pos], y)
+                                                hash_index_1,hash_index_2,hash_index_3,pos], y)
         train_loss += train_metrics[0]
     all_train_loss.append(train_loss)
 
@@ -155,15 +155,15 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch, trigram=True)
+        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch, trigram=True)
 
         embed_index_1 = embed_index[:,:-2]
         embed_index_2 = embed_index[:,1:-1]
         embed_index_3 = embed_index[:,2:]
 
-        auto_encoder_index_1 = auto_encoder_index[:,:-2]
-        auto_encoder_index_2 = auto_encoder_index[:,1:-1]
-        auto_encoder_index_3 = auto_encoder_index[:,2:]
+        hash_index_1 = hash_index[:,:-2]
+        hash_index_2 = hash_index[:,1:-1]
+        hash_index_3 = hash_index[:,2:]
        
         pos = [np.concatenate([np_utils.to_categorical(p[:-2],pos_length),np_utils.to_categorical(p[1:-1],pos_length),np_utils.to_categorical(p[2:],pos_length)],axis=1) for p in pos]
         pos = np.array([(np.concatenate([p, np.zeros((step_length-length[l], pos_length*3))])) for l,p in enumerate(pos)])
@@ -171,12 +171,12 @@ for epoch in range(nb_epoch):
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
         # for loss
         dev_metrics = model.test_on_batch([embed_index_1,embed_index_2,embed_index_3,\
-                                                auto_encoder_index_1,auto_encoder_index_2,auto_encoder_index_3,pos], y)
+                                                hash_index_1,hash_index_2,hash_index_3,pos], y)
         dev_loss += dev_metrics[0]
 
         # for accuracy
         prob = model.predict_on_batch([embed_index_1,embed_index_2,embed_index_3,\
-                                                auto_encoder_index_1,auto_encoder_index_2,auto_encoder_index_3,pos], y)
+                                                hash_index_1,hash_index_2,hash_index_3,pos], y)
         for i, l in enumerate(length):
             predict_label = np_utils.categorical_probas_to_classes(prob[i])
             correct_predict += np.sum(predict_label[:l]==label[i][:l])

@@ -112,7 +112,7 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
+        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
@@ -126,7 +126,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
+        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])

@@ -41,9 +41,9 @@ model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
+    embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
-    prob = model.predict_on_batch([embed_index, auto_encoder_index, pos])
+    prob = model.predict_on_batch([embed_index, hash_index, pos])
 
     for i, l in enumerate(length):
         predict_label = np_utils.categorical_probas_to_classes(prob[i])

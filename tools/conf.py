@@ -21,8 +21,8 @@ feature_length = 21952
 senna_length = 50
 senna_vocab = 130000
 
-auto_length = 128
-auto_vocab = 19460
+hash_length = 128
+hash_vocab = 19460
 
 pos_length = 44
 

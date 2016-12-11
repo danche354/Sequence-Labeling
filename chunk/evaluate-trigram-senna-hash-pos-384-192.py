@@ -41,21 +41,21 @@ model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each], trigram=True)
+    embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each], trigram=True)
     
     embed_index_1 = embed_index[:,:-2]
     embed_index_2 = embed_index[:,1:-1]
     embed_index_3 = embed_index[:,2:]
 
-    auto_encoder_index_1 = auto_encoder_index[:,:-2]
-    auto_encoder_index_2 = auto_encoder_index[:,1:-1]
-    auto_encoder_index_3 = auto_encoder_index[:,2:]
+    hash_index_1 = hash_index[:,:-2]
+    hash_index_2 = hash_index[:,1:-1]
+    hash_index_3 = hash_index[:,2:]
 
     pos = [np.concatenate([np_utils.to_categorical(p[:-2],pos_length),np_utils.to_categorical(p[1:-1],pos_length),np_utils.to_categorical(p[2:],pos_length)],axis=1) for p in pos]
     pos = np.array([(np.concatenate([p, np.zeros((step_length-length[l], pos_length*3))])) for l,p in enumerate(pos)])
 
     prob = model.predict_on_batch([embed_index_1,embed_index_2,embed_index_3,\
-                                                auto_encoder_index_1,auto_encoder_index_2,auto_encoder_index_3,pos])
+                                                hash_index_1,hash_index_2,hash_index_3,pos])
 
     for i, l in enumerate(length):
         predict_label = np_utils.categorical_probas_to_classes(prob[i])

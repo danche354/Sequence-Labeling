@@ -61,8 +61,8 @@ embedding = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_ze
 
 pos_input = Input(shape=(step_length, pos_length))
 
-senna_pos_merge = merge([embedding, pos_input], mode='concat')
-input_mask = Masking(mask_value=0)(senna_pos_merge)
+random_pos_merge = merge([embedding, pos_input], mode='concat')
+input_mask = Masking(mask_value=0)(random_pos_merge)
 hidden_1 = Bidirectional(LSTM(64, return_sequences=True))(input_mask)
 dp_1 = Dropout(0.2)(hidden_1)
 hidden_2 = Bidirectional(LSTM(32, return_sequences=True))(dp_1)
@@ -112,7 +112,7 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
+        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
@@ -126,7 +126,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
+        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
