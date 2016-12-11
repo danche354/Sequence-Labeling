@@ -41,7 +41,7 @@ model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
+    embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each], trigram=True)
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
     
     embed_index_1 = embed_index[:-2]

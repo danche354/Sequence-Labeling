@@ -63,7 +63,7 @@ embed_index_input_3 = Input(shape=(step_length,))
 embedding_1 = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input_1)
 embedding_2 = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input_2)
 embedding_3 = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input_3)
-pos_input = Input(shape=(step_length, pos_length))
+pos_input = Input(shape=(step_length, pos_length*3))
 senna_pos_merge = merge([embedding_1, embedding_2, embedding_3, pos_input], mode='concat')
 input_mask = Masking(mask_value=0)(senna_pos_merge)
 hidden_1 = Bidirectional(LSTM(192, return_sequences=True))(input_mask)
@@ -115,7 +115,7 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
+        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch, trigram=True)
         embed_index_1 = embed_index[:-2]
         embed_index_2 = embed_index[1:-1]
         embed_index_3 = embed_index[2:]
@@ -132,7 +132,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
+        embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch, trigram=True)
         embed_index_1 = embed_index[:-2]
         embed_index_2 = embed_index[1:-1]
         embed_index_3 = embed_index[2:]
