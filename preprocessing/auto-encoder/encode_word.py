@@ -43,9 +43,9 @@ for i, word in enumerate(all_word):
     word_hashing = prepare.prepare_chunk_encoder(batch=[word])
     word_hashing = word_hashing.toarray()
     representation = encoder.predict_on_batch(word_hashing)
-    normalization = (representation-np.min(representation))/(np.max(representation)-np.min(representation))
+    normalization = (representation-np.mean(representation))/np.std(representation)
     embeddings.loc[i] = normalization[0]
 
-embeddings.to_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', sep=' ',header=False,index=False)
+embeddings.to_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', sep=' ',header=False,index=False,float_format='%.6f')
 w.close()
 
