@@ -1,6 +1,7 @@
 from keras.models import load_model
 
 import pandas as pd
+import numpy as np
 
 import sys
 import os
@@ -40,7 +41,8 @@ for i, word in enumerate(all_word):
     word_hashing = prepare.prepare_chunk_encoder(batch=[word])
     word_hashing = word_hashing.toarray()
     representation = encoder.predict_on_batch(word_hashing)
-    embeddings.loc[i] = representation[0]
+    normalization = (representation-np.min(representation))/(np.max(representation)-np.min(representation))
+    embeddings.loc[i] = normalization[0]
 
 embeddings.to_csv('auto-encoder-embeddings.txt', sep=' ',header=False,index=False)
 w.close()
