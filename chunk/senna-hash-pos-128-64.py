@@ -35,7 +35,7 @@ emb_length = conf.senna_length
 auto_vocab = conf.auto_vocab
 auto_length = conf.auto_length
 
-NP_length = conf.NP_length
+output_length = conf.NP_length
 
 split_rate = conf.split_rate
 batch_size = conf.batch_size
@@ -66,16 +66,19 @@ auto_embedding = np.concatenate([np.zeros((1,auto_length)),auto_embedding, np.ra
 
 embed_index_input = Input(shape=(step_length,))
 embedding = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input)
+
 auto_index_input = Input(shape=(step_length,))
 auto_embedding = Embedding(auto_vocab+2, auto_length, weights=[auto_embedding], mask_zero=True, input_length=step_length)(auto_index_input)
+
 pos_input = Input(shape=(step_length, pos_length))
+
 senna_hash_pos_merge = merge([embedding, auto_embedding, pos_input], mode='concat')
 input_mask = Masking(mask_value=0)(senna_hash_pos_merge)
 hidden_1 = Bidirectional(LSTM(128, return_sequences=True))(input_mask)
 dp_1 = Dropout(0.2)(hidden_1)
 hidden_2 = Bidirectional(LSTM(64, return_sequences=True))(dp_1)
 dp_2 = Dropout(0.2)(hidden_2)
-output = TimeDistributed(Dense(NP_length, activation='softmax'))(dp_2)
+output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
 model = Model(input=[embed_index_input,auto_index_input,pos_input], output=output)
 
 model.compile(loss='categorical_crossentropy',
@@ -122,8 +125,8 @@ for epoch in range(nb_epoch):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
         embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
 
-        pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
-        y = np.array([np_utils.to_categorical(each, 3) for each in label])
+        pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
+        y = np.array([np_utils.to_categorical(each, output_length) for each in label])
 
         train_metrics = model.train_on_batch([embed_index, auto_encoder_index, pos], y)
         train_loss += train_metrics[0]
@@ -136,8 +139,8 @@ for epoch in range(nb_epoch):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
         embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
 
-        pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
-        y = np.array([np_utils.to_categorical(each, 3) for each in label])
+        pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
+        y = np.array([np_utils.to_categorical(each, output_length) for each in label])
         # for loss
         dev_metrics = model.test_on_batch([embed_index, auto_encoder_index, pos], y)
         dev_loss += dev_metrics[0]
