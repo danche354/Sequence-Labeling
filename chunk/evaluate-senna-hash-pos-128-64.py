@@ -21,6 +21,8 @@ from tools import prepare
 
 # input sentence dimensions
 step_length = conf.step_length
+pos_length = conf.pos_length
+
 IOB = conf.NP_IOB_decode
 
 test_data = load_data.load_chunk(dataset='test.txt')
@@ -40,7 +42,7 @@ print('loading model finished.')
 
 for each in test_data:
     embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
-    pos = np.array([(np.concatenate([np_utils.to_categorical(p, 44), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
+    pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
     prob = model.predict_on_batch([embed_index, auto_encoder_index, pos])
 
     for i, l in enumerate(length):

@@ -32,7 +32,7 @@ pos_length = conf.pos_length
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
 
-NP_length = conf.NP_length
+output_length = conf.NP_length
 
 split_rate = conf.split_rate
 batch_size = conf.batch_size
@@ -70,7 +70,7 @@ hidden_1 = Bidirectional(LSTM(64, return_sequences=True))(input_mask)
 dp_1 = Dropout(0.2)(hidden_1)
 hidden_2 = Bidirectional(LSTM(32, return_sequences=True))(dp_1)
 dp_2 = Dropout(0.2)(hidden_2)
-output = TimeDistributed(Dense(NP_length, activation='softmax'))(dp_2)
+output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
 model = Model(input=[embed_index_input_1,embed_index_input_2, embed_index_input_3,pos_input], output=output)
 
 model.compile(loss='categorical_crossentropy',
@@ -133,8 +133,11 @@ for epoch in range(nb_epoch):
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
         embed_index, auto_encoder_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
-
-        pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length*3), np.zeros((step_length-length[l], 44))])) for l,p in enumerate(pos)])
+        embed_index_1 = embed_index[:-2]
+        embed_index_2 = embed_index[1:-1]
+        embed_index_3 = embed_index[2:]
+        pos = [np.concatenate([np_utils.to_categorical(p[:-2],pos_length),np_utils.to_categorical(p[1:-1],pos_length),np_utils.to_categorical(p[2:],pos_length)],axis=1) for p in pos]
+        pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length*3), np.zeros((step_length-length[l], pos_length*3))])) for l,p in enumerate(pos)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
         # for loss
         dev_metrics = model.test_on_batch([embed_index, pos], y)
