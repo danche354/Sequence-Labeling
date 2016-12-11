@@ -17,7 +17,7 @@ with open('../preprocessing//l3g/l3g.txt') as f:
         l3g_dict[each] = i
 
 step_length = 80
-feature_length = 8146
+feature_length = 21952
 senna_length = 50
 senna_vocab = 130000
 

@@ -24,7 +24,6 @@ np.random.seed(0)
 
 # train hyperparameters
 feature_length = conf.feature_length
-pos_length = conf.pos_length
 
 split_rate = conf.split_rate
 batch_size = conf.word_batch_size
