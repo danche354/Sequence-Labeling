@@ -7,7 +7,7 @@ with open('../preprocessing/senna/senna.json') as j:
     senna_dict = json.load(j)
 
 with open('../preprocessing/auto-encoder/auto_encoder.json') as l:
-    auto_encoder_dict = json.load(l)
+    hash_dict = json.load(l)
 
 l3g_dict = {}
 

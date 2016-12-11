@@ -7,8 +7,8 @@ import conf
 embedding_dict = conf.senna_dict
 emb_vocab = conf.senna_vocab
 
-auto_encoder_dict = conf.auto_encoder_dict
-auto_vocab = conf.auto_vocab
+hash_dict = conf.hash_dict
+hash_vocab = conf.hash_vocab
 
 step_length = conf.step_length
 feature_length = conf.feature_length
@@ -47,7 +47,7 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length
             sequence_pos.append('#')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _auto_encoder_index = [auto_encoder_dict.get(each.strip().lower(), auto_vocab+1) for each in sequence]
+        _auto_encoder_index = [hash_dict.get(each.strip().lower(), auto_vocab+1) for each in sequence]
         sentences.append(sentence[0])
         _pos = [POS[each] for each in sequence_pos]
         _label = [IOB[each] for each in sentence[2]]

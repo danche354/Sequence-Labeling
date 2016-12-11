@@ -16,7 +16,7 @@ sys.path.append('../tools')
 from tools import load_data
 from tools import prepare
 
-model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_19.h5'
+model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_3.h5'
 
 w = open('../preprocessing/auto-encoder/conll2000-word.lst', 'w')
 embeddings = pd.DataFrame(columns=range(128))
