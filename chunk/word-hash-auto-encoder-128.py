@@ -58,7 +58,7 @@ print('word dev shape:', word_dev_samples)
 
 # model structure
 word_input = Input(shape=(feature_length, ))
-hidden = Dense(128, activation='tanh')(word_input)
+hidden = Dense(128)(word_input)
 dp = Dropout(0.2)(hidden)
 word_output = Dense(feature_length)(dp)
 model = Model(input=word_input, output=word_output)
