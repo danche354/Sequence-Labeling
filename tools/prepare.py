@@ -38,6 +38,7 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length
         # sentence and sentence pos
         sequence = list(sentence[0])
         sequence_pos = list(sentence[1])
+        # for trigram
         if trigram:
             # add start and end mark
             sequence.insert(0, '#')
