@@ -21,14 +21,7 @@ def word2index(word_list):
     for i, word in enumerate(word_list):
         length = len(word) - 2
         # for letter preprocessing
-        lword = ''
-        for w in word.lower():
-            if w.isalpha():
-                lword += w
-            elif w.isdigit():
-                lword += '0'
-            else:
-                lword += '#'
+        lword = word.lower()
         for j in range(length):
             sen_matrix[i, l3g_dict[lword[j: j+3]]] += 1
     return sen_matrix
