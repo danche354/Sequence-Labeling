@@ -28,7 +28,7 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length
         IOB = NP_IOB
 
     embedding_index = []
-    auto_encoder_index = []
+    hash_index = []
     pos = []
     label = []
     sentence_length = []
@@ -47,7 +47,7 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length
             sequence_pos.append('#')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _auto_encoder_index = [hash_dict.get(each.strip().lower(), auto_vocab+1) for each in sequence]
+        _hash_index = [hash_dict.get(each.strip().lower(), hash_vocab+1) for each in sequence]
         sentences.append(sentence[0])
         _pos = [POS[each] for each in sequence_pos]
         _label = [IOB[each] for each in sentence[2]]
@@ -55,16 +55,16 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=step_length
 
         _label.extend([0]*(step_length-length))
         _embedding_index.extend([0]*(step_length-length))
-        _auto_encoder_index.extend([0]*(step_length-length))
+        _hash_index.extend([0]*(step_length-length))
 
         embedding_index.append(_embedding_index)
-        auto_encoder_index.append(_auto_encoder_index)
+        hash_index.append(_hash_index)
         pos.append(_pos)
         label.append(_label)
         # record the sentence length for calculate accuracy
         sentence_length.append(length)
 
-    return np.array(embedding_index), np.array(auto_encoder_index), np.array(pos), np.array(label), np.array(sentence_length), sentences
+    return np.array(embedding_index), np.array(hash_index), np.array(pos), np.array(label), np.array(sentence_length), sentences
 
 
 

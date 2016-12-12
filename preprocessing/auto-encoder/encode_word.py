@@ -16,7 +16,7 @@ sys.path.append('../tools')
 from tools import load_data
 from tools import prepare
 
-model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_3.h5'
+model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_18.h5'
 
 w = open('../preprocessing/auto-encoder/conll2000-word.lst', 'w')
 embeddings = pd.DataFrame(columns=range(128))
@@ -43,7 +43,8 @@ for i, word in enumerate(all_word):
     word_hashing = prepare.prepare_chunk_encoder(batch=[word])
     word_hashing = word_hashing.toarray()
     representation = encoder.predict_on_batch(word_hashing)
-    normalization = (representation-np.mean(representation))/np.std(representation)
+#normalization = (representation-np.mean(representation))/np.std(representation)
+    normalization = (representation-np.min(representation))/(np.max(representation)-np.min(representation))
     embeddings.loc[i] = normalization[0]
 
 embeddings.to_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', sep=' ',header=False,index=False,float_format='%.6f')
