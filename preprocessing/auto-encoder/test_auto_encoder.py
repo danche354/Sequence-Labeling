@@ -39,9 +39,31 @@ train_word = [each.strip().lower() for each in train_word]
 dev_word = [each.strip().lower() for each in dev_word]
 test_word = [each.strip().lower() for each in test_word]
 
-train_word = list(set(train_word))
-dev_word = list(set(dev_word))
-test_word = list(set(test_word))
+train_word_dict = {}
+dev_word_dict = {}
+test_word_dict = {}
+
+for each in train_word:
+    if each in train_word_dict:
+        train_word_dict[each] += 1
+    else:
+        train_word_dict[each] = 1
+    
+for each in dev_word:
+    if each in dev_word_dict:
+        dev_word_dict[each] += 1
+    else:
+        dev_word_dict[each] = 1
+
+for each in test_word:
+    if each in test_word_dict:
+        test_word_dict[each] += 1
+    else:
+        test_word_dict[each] = 1
+
+train_word = train_word_dict.keys()
+dev_word = dev_word_dict.keys()
+test_word = test_word_dict.keys()
 
 if test=='dev':
     word = dev_word[:20]
@@ -56,13 +78,22 @@ output = model.predict_on_batch(word_hashing)
 
 while True:
     number = input('please input word index: ')
+    exist = word[number]
+    print('word is: ' + exist)
+    if exist in train_word_dict:
+        print('    in train: ' + str(train_word_dict[exist]) + ' times.')
+    if exist in dev_word_dict:
+        print('    in dev: ' + str(dev_word_dict[exist]) + ' times.')
+    if exist in test_word_dict:
+        print('    in test: ' + str(test_word_dict[exist]) + ' times.')
+    print('-'*60)
+    ind = []
     for i, e in enumerate(word_hashing[number]):
         if e==1:
             print(i)
+            ind.append(i)
     print('word_hasing'+ '-'*60)
-
-    threshold = input('please input threshold: ')
-    for i, e in enumerate(output[number]):
-        if e>=threshold:
-            print(i)
+    
+    for i in ind:
+        print(output[number][i])
     print('output'+ '-'*60)

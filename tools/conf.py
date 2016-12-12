@@ -32,10 +32,10 @@ ALL_length = 23
 
 split_rate = 0.9
 
-word_batch_size = 400
+word_batch_size = 200
 batch_size = 20
 
-nb_epoch = 20
+nb_epoch = 30
 
 NP_IOB_encode = {'B-NP':0, 'I-NP':1, 'O':2}
 NP_IOB_decode = {0: 'B-NP', 1: 'I-NP', 2: 'O'}
