@@ -58,10 +58,9 @@ print('word dev shape:', word_dev_samples)
 
 # model structure
 word_input = Input(shape=(feature_length, ))
-dp_1 = Dropout(0.5)(word_input)
-hidden = Dense(128)(dp_1)
-dp_2 = Dropout(0.5)(hidden)
-word_output = Dense(feature_length)(dp_2)
+hidden = Dense(128)(word_input)
+dp = Dropout(0.5)(hidden)
+word_output = Dense(feature_length)(dp)
 model = Model(input=word_input, output=word_output)
 auto_encoder = Model(input=word_input, output=hidden)
 model.compile(loss='mse',

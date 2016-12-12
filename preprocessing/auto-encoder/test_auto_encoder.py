@@ -19,9 +19,9 @@ from tools import prepare
 epoch = sys.argv[1]
 test = sys.argv[2]
 
-path = './model/word-hash-auto-encoder-128/hidden_model_epoch_%s.h5'%epoch
+path = './model/word-hash-auto-encoder-128/model_epoch_%s.h5'%epoch
 
-model = load_data(path)
+model = load_model(path)
 
 train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=0.9)
 test_data = load_data.load_chunk(dataset='test.txt')
@@ -45,7 +45,7 @@ test_word = list(set(test_word))
 
 if test=='dev':
     word = dev_word[:20]
-elif test='test':
+elif test=='test':
     word = test_word[:20]
 else:
     word = train_word[:20]
@@ -56,13 +56,13 @@ output = model.predict_on_batch(word_hashing)
 
 while True:
     number = input('please input word index: ')
-    for i, e in word_hashing[number]:
+    for i, e in enumerate(word_hashing[number]):
         if e==1:
             print(i)
     print('word_hasing'+ '-'*60)
 
     threshold = input('please input threshold: ')
-    for i, e in output[number]:
+    for i, e in enumerate(output[number]):
         if e>=threshold:
             print(i)
     print('output'+ '-'*60)
