@@ -176,7 +176,7 @@ for epoch in range(nb_epoch):
 
         # for accuracy
         prob = model.predict_on_batch([embed_index_1,embed_index_2,embed_index_3,\
-                                                hash_index_1,hash_index_2,hash_index_3,pos], y)
+                                                hash_index_1,hash_index_2,hash_index_3,pos])
         for i, l in enumerate(length):
             predict_label = np_utils.categorical_probas_to_classes(prob[i])
             correct_predict += np.sum(predict_label[:l]==label[i][:l])
