@@ -51,6 +51,34 @@ def load_chunk(dataset, amount=0, split_rate=0.9, chunk_type='NP'):
 
         return test_data
 
+def load_ner(dataset, amount=0):
+    if dataset=='eng.train':
+        train_set = open('../dataset/ner/eng.train', 'r')
+        train_set = train_set.read().strip().split('\n\n')
+
+        if amount!=0:
+            train_set = train_set[:amount]
+
+        train_set = list(map(str2tuple, train_set))
+
+        return train_set
+
+    elif dataset=='eng.testa':
+        dev_set = open('../dataset/ner/eng.testa', 'r')
+        dev_set = dev_set.read().strip().split('\n\n')
+
+        dev_set = list(map(str2tuple, dev_set))
+
+        return dev_set
+
+    elif dataset=='eng.testb':
+        test_set = open('../dataset/ner/eng.testb', 'r')
+        test_set = test_set.read().strip().split('\n\n')
+
+        test_set = list(map(str2tuple, test_set))
+
+        return test_set
+
 # sentence example:
 # ['He PR B-NP', 'is VB I-VP']
 def str2tuple(sentence):

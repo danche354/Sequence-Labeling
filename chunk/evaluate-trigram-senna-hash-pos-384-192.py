@@ -20,10 +20,10 @@ from tools import load_data
 from tools import prepare
 
 # input sentence dimensions
-step_length = conf.step_length
-pos_length = conf.pos_length
+step_length = conf.chunk_step_length
+pos_length = conf.chunk_pos_length
 
-IOB = conf.NP_IOB_decode
+IOB = conf.chunk_NP_IOB_decode
 
 test_data = load_data.load_chunk(dataset='test.txt')
 

@@ -23,9 +23,9 @@ from tools import plot
 np.random.seed(0)
 
 # train hyperparameters
-feature_length = conf.feature_length
+feature_length = conf.chunk_feature_length
 
-split_rate = conf.split_rate
+split_rate = conf.chunk_split_rate
 batch_size = conf.word_batch_size
 nb_epoch = conf.nb_epoch
 
@@ -102,7 +102,7 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = word_train_data[i*batch_size: (i+1)*batch_size]
-        X_train_batch = prepare.prepare_chunk_encoder(batch=train_batch)
+        X_train_batch = prepare.prepare_auto_encoder(batch=train_batch, task='chunk')
         X_train_batch = X_train_batch.toarray()
         train_metrics = model.train_on_batch(X_train_batch, X_train_batch)
         train_loss += train_metrics[0]
@@ -110,7 +110,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = word_dev_data[j*batch_size: (j+1)*batch_size]
-        X_dev_batch = prepare.prepare_chunk_encoder(batch=dev_batch)
+        X_dev_batch = prepare.prepare_auto_encoder(batch=dev_batch, task='chunk')
         X_dev_batch = X_dev_batch.toarray()
         dev_metrics = model.test_on_batch(X_dev_batch, X_dev_batch)
         dev_loss += dev_metrics[0]

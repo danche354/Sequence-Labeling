@@ -25,15 +25,15 @@ from tools import plot
 np.random.seed(0)
 
 # train hyperparameters
-step_length = conf.step_length
-pos_length = conf.pos_length
+step_length = conf.chunk_step_length
+pos_length = conf.chunk_pos_length
 
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
 
-output_length = conf.NP_length
+output_length = conf.chunk_NP_length
 
-split_rate = conf.split_rate
+split_rate = conf.chunk_split_rate
 batch_size = conf.batch_size
 nb_epoch = conf.nb_epoch
 
