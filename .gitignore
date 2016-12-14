@@ -97,3 +97,7 @@ ner/model/
 *.out
 
 *.png
+
+# dataset for privacy
+dataset/chunk/*
+dataset/ner/*
