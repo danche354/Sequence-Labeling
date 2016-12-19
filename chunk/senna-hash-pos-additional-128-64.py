@@ -147,7 +147,7 @@ for epoch in range(nb_epoch):
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         
-        additional, length_2 = prepare.prepare_additional(batch=train_batch)
+        additional, length_2 = prepare.prepare_additional(batch=dev_batch)
         additional = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], additional_length))])) for l,a in enumerate(additional)])
 
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])

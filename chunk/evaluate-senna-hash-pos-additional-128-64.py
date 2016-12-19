@@ -44,7 +44,7 @@ for each in test_data:
     embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
     
-    additional, length_2 = prepare.prepare_additional(batch=train_batch)
+    additional, length_2 = prepare.prepare_additional(batch=[each])
     additional = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], additional_length))])) for l,a in enumerate(additional)])
 
     prob = model.predict_on_batch([embed_index, hash_index, pos, additional])
