@@ -52,6 +52,11 @@ chunk_ALL_length = 23
 
 ner_chunk_length = 9
 
+chunk_additional_length = 9
+
+chunk_NP_length = 3
+chunk_ALL_length = 23
+
 chunk_split_rate = 0.9
 
 word_batch_size = 200
