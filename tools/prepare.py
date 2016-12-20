@@ -14,6 +14,7 @@ hash_vocab = conf.hash_vocab
 
 step_length = conf.step_length
 feature_length = conf.feature_length
+additional_length = conf.additional_length
 
 ALL_IOB = conf.ALL_IOB_encode
 NP_IOB = conf.NP_IOB_encode
@@ -78,10 +79,10 @@ def prepare_additional(batch, chunk_type='NP', step_length=step_length, feature_
         sequence = list(sentence[0])
         length = len(sequence)
         sentence_length.append(length)
-        spelling_feature = np.zeros((length, 8))
+        spelling_feature = np.zeros((length, additional_length))
         for i, word in enumerate(sequence):
             word = word.strip()
-            spelling = np.zeros(8)
+            spelling = np.zeros(additional_length)
             # is all letter is uppercase, digit or other
             # all uppercase
             if word.isupper():
@@ -98,18 +99,20 @@ def prepare_additional(batch, chunk_type='NP', step_length=step_length, feature_
             # end with 's
             elif word=="'s":
                 spelling[4] = 1
+            else:
+                spelling[5] = 1
 
             first_ele = word[0]
             # start with alpha
             if first_ele.isalpha():
                 # start with upper
                 if first_ele.isupper():
-                    spelling[5] = 1
+                    spelling[6] = 1
             # start with digit
             elif first_ele.isdigit():
-                spelling[6] = 1
-            else:
                 spelling[7] = 1
+            else:
+                spelling[8] = 1
 
             spelling_feature[i] = spelling
         additional_feature.append(spelling_feature)

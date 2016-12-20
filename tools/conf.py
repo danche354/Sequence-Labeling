@@ -27,7 +27,7 @@ hash_vocab = 19460
 
 pos_length = 44
 
-additional_length = 8
+additional_length = 9
 
 NP_length = 3
 ALL_length = 23
