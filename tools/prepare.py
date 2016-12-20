@@ -16,28 +16,27 @@ ner_hash_dict = conf.ner_hash_dict
 ner_hash_vocab = conf.ner_hash_vocab
 
 chunk_step_length = conf.chunk_step_length
-chunk_feature_length = conf.chunk_feature_length
 chunk_additional_length = conf.chunk_additional_length
 
 
 ner_step_length = conf.ner_step_length
-ner_feature_length = conf.ner_feature_length
 
 chunk_ALL_IOB = conf.chunk_ALL_IOB_encode
 chunk_NP_IOB = conf.chunk_NP_IOB_encode
 chunk_POS = conf.chunk_POS_encode
 
 
-ner_chunk = conf.ner_chunk_encode
 ner_POS = conf.ner_POS_encode
+ner_chunk = conf.ner_chunk_encode
 ner_IOB = conf.ner_IOB_encode
+
 
 
 def prepare_auto_encoder(batch, task):
     word_hashing = hashing.sen2matrix(batch, task)
     return word_hashing
 
-def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_length, feature_length=chunk_feature_length):
+def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_length):
     if chunk_type=='ALL':
         IOB = chunk_ALL_IOB
     else:
@@ -69,9 +68,9 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_
         _label = [IOB[each] for each in sentence[2]]
         length = len(_label)
 
-        _label.extend([0]*(chunk_step_length-length))
-        _embedding_index.extend([0]*(chunk_step_length-length))
-        _hash_index.extend([0]*(chunk_step_length-length))
+        _label.extend([0]*(step_length-length))
+        _embedding_index.extend([0]*(step_length-length))
+        _hash_index.extend([0]*(step_length-length))
 
         embedding_index.append(_embedding_index)
         hash_index.append(_hash_index)
@@ -83,7 +82,7 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_
     return np.array(embedding_index), np.array(hash_index), np.array(pos), np.array(label), np.array(sentence_length), sentences
             
 
-def prepare_ner(batch, trigram=False, step_length=ner_step_length, feature_length=ner_feature_length):
+def prepare_ner(batch, trigram=False, step_length=ner_step_length):
 
     embedding_index = []
     hash_index = []
@@ -110,16 +109,16 @@ def prepare_ner(batch, trigram=False, step_length=ner_step_length, feature_lengt
             sequence_chunk.append('-X-')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _hash_index = [chunk_hash_dict.get(each.strip().lower(), chunk_hash_vocab+1) for each in sequence]
+        _hash_index = [ner_hash_dict.get(each.strip().lower(), ner_hash_vocab+1) for each in sequence]
         sentences.append(sentence[0])
         _pos = [ner_POS[each] for each in sequence_pos]
         _chunk = [ner_chunk[each] for each in sequence_chunk]
-        _label = [IOB[each] for each in sentence[2]]
+        _label = [ner_IOB[each] for each in sentence[3]]
         length = len(_label)
 
-        _label.extend([0]*(chunk_step_length-length))
-        _embedding_index.extend([0]*(chunk_step_length-length))
-        _hash_index.extend([0]*(chunk_step_length-length))
+        _label.extend([0]*(step_length-length))
+        _embedding_index.extend([0]*(step_length-length))
+        _hash_index.extend([0]*(step_length-length))
 
         embedding_index.append(_embedding_index)
         hash_index.append(_hash_index)
@@ -132,7 +131,7 @@ def prepare_ner(batch, trigram=False, step_length=ner_step_length, feature_lengt
     return np.array(embedding_index), np.array(hash_index), np.array(pos), np.array(chunk), np.array(label), np.array(sentence_length), sentences
 
 
-def prepare_additional(batch, step_length=step_length, feature_length=feature_length):
+def prepare_additional(batch, step_length=step_length):
     special_case = re.compile(r'^[^a-zA-Z0-9]*$')
     lower_case = re.compile(r'^[a-z]*$')
     additional_feature = []

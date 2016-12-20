@@ -14,7 +14,7 @@ chunk_l3g_dict = {}
 with open('../preprocessing/chunk-l3g/l3g.txt') as f:
     chunk_l3g_list = f.read().strip().split('\n')
     for i, each in enumerate(chunk_l3g_list):
-        chunk_l3g_list[each] = i
+        chunk_l3g_dict[each] = i
 
 with open('../preprocessing/ner-auto-encoder/auto_encoder.json') as l:
     ner_hash_dict = json.load(l)
@@ -24,7 +24,7 @@ ner_l3g_dict = {}
 with open('../preprocessing/ner-l3g/l3g.txt') as f:
     ner_l3g_list = f.read().strip().split('\n')
     for i, each in enumerate(ner_l3g_list):
-        ner_l3g_list[each] = i
+        ner_l3g_dict[each] = i
 
 
 chunk_step_length = 80
