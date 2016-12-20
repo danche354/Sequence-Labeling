@@ -23,7 +23,7 @@ def word2index(word_list, task):
     if task=='chunk':
         feature_length = chunk_feature_length
         l3g_dict = chunk_l3g_dict
-    elif task='ner':
+    elif task=='ner':
         feature_length = ner_feature_length
         l3g_dict = ner_l3g_dict
 

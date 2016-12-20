@@ -131,7 +131,11 @@ def prepare_ner(batch, trigram=False, step_length=ner_step_length):
     return np.array(embedding_index), np.array(hash_index), np.array(pos), np.array(chunk), np.array(label), np.array(sentence_length), sentences
 
 
-def prepare_additional(batch, step_length=step_length):
+def prepare_additional(batch, task='chunk'):
+    if task=='chunk':
+        step_length = chunk_step_length
+    elif task=='ner':
+        step_length = ner_step_length
     special_case = re.compile(r'^[^a-zA-Z0-9]*$')
     lower_case = re.compile(r'^[a-z]*$')
     additional_feature = []
