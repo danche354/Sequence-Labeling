@@ -53,7 +53,7 @@ print('dev shape:', dev_samples)
 print()
 
 #word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=' ', header=None)
-word_embedding = np.random.randn(emb_vocab+1, emb_length)
+word_embedding = np.random.rand(emb_vocab+1, emb_length)
 word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding])
 
 embed_index_input = Input(shape=(step_length,))

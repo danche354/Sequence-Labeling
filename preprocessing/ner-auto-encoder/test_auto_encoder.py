@@ -23,9 +23,9 @@ path = './model/word-hash-auto-encoder-128/model_epoch_%s.h5'%epoch
 
 model = load_model(path)
 
-train_data = load_data.load_chunk(dataset='eng.train')
-dev_data = load_data.load_chunk(dataset='eng.testa')
-test_data = load_data.load_chunk(dataset='eng.testb')
+train_data = load_data.load_ner(dataset='eng.train')
+dev_data = load_data.load_ner(dataset='eng.testa')
+test_data = load_data.load_ner(dataset='eng.testb')
 
 train_word = []
 dev_word = []

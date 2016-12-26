@@ -52,7 +52,7 @@ print('train shape:', train_samples)
 print('dev shape:', dev_samples)
 print()
 
-hash_embedding = pd.read_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
+hash_embedding = pd.read_csv('../preprocessing/chunk-auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
 hash_embedding = hash_embedding.values
 hash_embedding = np.concatenate([np.zeros((1,hash_length)),hash_embedding, np.random.randn(1,hash_length)])
 

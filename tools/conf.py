@@ -30,7 +30,7 @@ with open('../preprocessing/ner-l3g/l3g.txt') as f:
 chunk_step_length = 80
 chunk_feature_length = 8616
 
-ner_step_length = 80
+ner_step_length = 126
 ner_feature_length = 11313
 
 senna_length = 50
@@ -40,29 +40,30 @@ chunk_hash_length = 128
 chunk_hash_vocab = 19460
 
 ner_hash_length = 128
-ner_hash_vocab = 19460
+ner_hash_vocab = 26870
 
 chunk_pos_length = 44
 
-ner_pos_length = 44
+ner_pos_length = 46
 
 
 chunk_NP_length = 3
 chunk_ALL_length = 23
 
-ner_chunk_length = 9
-
-chunk_additional_length = 9
+additional_length = 9
 
 chunk_NP_length = 3
 chunk_ALL_length = 23
 
 chunk_split_rate = 0.9
 
+ner_chunk_length = 18
+ner_IOB_length = 9
+
 word_batch_size = 200
 batch_size = 20
 
-nb_epoch = 30
+nb_epoch = 40
 
 chunk_NP_IOB_encode = {'B-NP':0, 'I-NP':1, 'O':2}
 chunk_NP_IOB_decode = {0: 'B-NP', 1: 'I-NP', 2: 'O'}
@@ -100,5 +101,5 @@ ner_POS_encode = {'NN':0, 'IN':1, 'NNP':2, 'DT':3, 'NNS':4,
     'VBP':18, 'MD':19, 'PRP$':20, 'POS':21, '$':22, '-X-':23,
     "''":24, ':':25, 'WDT':26, 'JJR':27, 'WP':28, 'WRB':29,
     'NNPS':30, 'JJS':31, 'RBR':32, ')':33, '(':34, 'EX':35,
-    'RBS':36, 'RP':37, 'PDT':38, '#':39, 'FW':40, 'WP$':41, 'UH':42, 'SYM':43,
+    'RBS':36, 'RP':37, 'PDT':38, 'LS':39, 'FW':40, 'WP$':41, 'UH':42, 'SYM':43,
     '"':44, 'NN|SYM':45}

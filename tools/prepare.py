@@ -16,8 +16,6 @@ ner_hash_dict = conf.ner_hash_dict
 ner_hash_vocab = conf.ner_hash_vocab
 
 chunk_step_length = conf.chunk_step_length
-chunk_additional_length = conf.chunk_additional_length
-
 
 ner_step_length = conf.ner_step_length
 
@@ -30,6 +28,7 @@ ner_POS = conf.ner_POS_encode
 ner_chunk = conf.ner_chunk_encode
 ner_IOB = conf.ner_IOB_encode
 
+additional_length = conf.additional_length
 
 
 def prepare_auto_encoder(batch, task):

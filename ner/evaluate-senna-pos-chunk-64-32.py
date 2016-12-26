@@ -20,13 +20,13 @@ from tools import load_data
 from tools import prepare
 
 # input sentence dimensions
-step_length = conf.chunk_step_length
-pos_length = conf.chunk_pos_length
-additional_length = conf.additional_length
+step_length = conf.ner_step_length
+pos_length = conf.ner_pos_length
+chunk_length = conf.ner_chunk_length
 
-IOB = conf.chunk_NP_IOB_decode
+IOB = conf.ner_IOB_decode
 
-test_data = load_data.load_chunk(dataset='test.txt')
+test_data = load_data.load_ner(dataset='eng.testb')
 
 best_epoch = sys.argv[1]
 
@@ -42,13 +42,10 @@ model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=[each])
+    embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=[each])
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
-    
-    additional, length_2 = prepare.prepare_additional(batch=[each])
-    additional = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], additional_length))])) for l,a in enumerate(additional)])
-
-    prob = model.predict_on_batch([embed_index, hash_index, pos, additional])
+    chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
+    prob = model.predict_on_batch([embed_index, pos, chunk])
 
     for i, l in enumerate(length):
         predict_label = np_utils.categorical_probas_to_classes(prob[i])

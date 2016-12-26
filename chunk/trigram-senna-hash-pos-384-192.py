@@ -3,6 +3,7 @@ from keras.layers import Input, Masking, Dense, LSTM
 from keras.layers import Dropout, TimeDistributed, Bidirectional, merge
 from keras.layers.embeddings import Embedding
 from keras.utils import np_utils
+from keras.optimizers import RMSprop
 
 import numpy as np
 import pandas as pd
@@ -39,6 +40,7 @@ output_length = conf.chunk_NP_length
 split_rate = conf.chunk_split_rate
 batch_size = conf.batch_size
 nb_epoch = conf.nb_epoch
+#nb_epoch = 50
 
 model_name = os.path.basename(__file__)[:-3]
 
@@ -59,7 +61,7 @@ word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=
 word_embedding = word_embedding.values
 word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.randn(1,emb_length)])
 
-hash_embedding = pd.read_csv('../preprocessing/auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
+hash_embedding = pd.read_csv('../preprocessing/chunk-auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
 hash_embedding = hash_embedding.values
 hash_embedding = np.concatenate([np.zeros((1,hash_length)),hash_embedding, np.random.randn(1,hash_length)])
 
@@ -87,6 +89,8 @@ hidden_2 = Bidirectional(LSTM(192, return_sequences=True))(hidden_1)
 dp_2 = Dropout(0.5)(hidden_2)
 output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
 model = Model(input=[embed_index_input_1,embed_index_input_2,embed_index_input_3,hash_index_input_1,hash_index_input_2,hash_index_input_3,pos_input], output=output)
+
+#rmsprop = RMSprop(lr=0.0002)
 
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',

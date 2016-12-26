@@ -43,7 +43,7 @@ for i, word in enumerate(all_word):
     word_hashing = prepare.prepare_auto_encoder(batch=[word], task='chunk')
     word_hashing = word_hashing.toarray()
     representation = encoder.predict_on_batch(word_hashing)
-    #normalization = (representation-np.mean(representation))/np.std(representation)
+#normalization = (representation-np.mean(representation))/np.std(representation)
     normalization = (representation-np.min(representation))/(np.max(representation)-np.min(representation))
     embeddings.loc[i] = normalization[0]
 

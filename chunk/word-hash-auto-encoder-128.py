@@ -3,6 +3,7 @@ from keras.layers import Input, Masking, Dense, LSTM
 from keras.layers import Dropout, merge, Bidirectional
 from keras.layers.embeddings import Embedding
 from keras.utils import np_utils
+from keras.optimizers import Adam
 
 import numpy as np
 
@@ -55,6 +56,7 @@ word_dev_samples=len(word_dev_data)
 print('word train shape:', word_train_samples)
 print('word dev shape:', word_dev_samples)
 
+adam = Adam(lr=0.0001)
 
 # model structure
 word_input = Input(shape=(feature_length, ))
@@ -64,7 +66,7 @@ word_output = Dense(feature_length)(dp)
 model = Model(input=word_input, output=word_output)
 auto_encoder = Model(input=word_input, output=hidden)
 model.compile(loss='mse',
-              optimizer='adam',
+              optimizer=adam,
               metrics=['accuracy'])
 
 print(model.summary())

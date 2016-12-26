@@ -16,7 +16,7 @@ sys.path.append('../tools')
 from tools import load_data
 from tools import prepare
 
-model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_27.h5'
+model_path = './model/word-hash-auto-encoder-128/hidden_model_epoch_10.h5'
 
 w = open('../preprocessing/ner-auto-encoder/conll2003-word.lst', 'w')
 embeddings = pd.DataFrame(columns=range(128))
@@ -25,9 +25,9 @@ print('loading model...')
 encoder = load_model(model_path)
 print('loading model finished.')
 
-train_data = load_data.load_chunk(dataset='eng.train')
-dev_data = load_data.load_chunk(dataset='eng.testa')
-test_data = load_data.load_chunk(dataset='eng.testb')
+train_data = load_data.load_ner(dataset='eng.train')
+dev_data = load_data.load_ner(dataset='eng.testa')
+test_data = load_data.load_ner(dataset='eng.testb')
 
 all_word =[]
 
@@ -41,7 +41,7 @@ all_word = list(set(all_word))
 
 for i, word in enumerate(all_word):
     w.write(word+'\n')
-    word_hashing = prepare.prepare_auto_encoder(batch=[word] task='ner')
+    word_hashing = prepare.prepare_auto_encoder(batch=[word], task='ner')
     word_hashing = word_hashing.toarray()
     representation = encoder.predict_on_batch(word_hashing)
     #normalization = (representation-np.mean(representation))/np.std(representation)
