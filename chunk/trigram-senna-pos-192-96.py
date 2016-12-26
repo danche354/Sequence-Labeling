@@ -75,10 +75,10 @@ dp_2 = Dropout(0.5)(hidden_2)
 output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
 model = Model(input=[embed_index_input_1,embed_index_input_2, embed_index_input_3,pos_input], output=output)
 
-#rmsprop = RMSprop(lr=0.0002)
+rmsprop = RMSprop(lr=0.0002)
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
+              optimizer=rmsprop,
               metrics=['accuracy'])
 
 print(model.summary())
