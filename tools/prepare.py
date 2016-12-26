@@ -79,7 +79,52 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_
         sentence_length.append(length)
 
     return np.array(embedding_index), np.array(hash_index), np.array(pos), np.array(label), np.array(sentence_length), sentences
-            
+
+# raw hashing
+def prepare_chunk_raw(batch, trigram=False, chunk_type='NP', step_length=chunk_step_length):
+    if chunk_type=='ALL':
+        IOB = chunk_ALL_IOB
+    else:
+        IOB = chunk_NP_IOB
+
+    embedding_index = []
+    hash_representation = []
+    pos = []
+    label = []
+    sentence_length = []
+    sentences = []
+
+    for sentence in batch:
+        # sentence and sentence pos
+        sequence = list(sentence[0])
+        sequence_pos = list(sentence[1])
+        # for trigram
+        if trigram:
+            # add start and end mark
+            sequence.insert(0, '#')
+            sequence.append('#')
+            sequence_pos.insert(0, '#')
+            sequence_pos.append('#')
+
+        _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
+        _hash_representation = hashing.sen2matrix(sequence, task="chunk")
+        sentences.append(sentence[0])
+        _pos = [chunk_POS[each] for each in sequence_pos]
+        _label = [IOB[each] for each in sentence[2]]
+        length = len(_label)
+
+        _label.extend([0]*(step_length-length))
+        _embedding_index.extend([0]*(step_length-length))
+
+        embedding_index.append(_embedding_index)
+        hash_representation.append(_hash_representation)
+        pos.append(_pos)
+        label.append(_label)
+        # record the sentence length for calculate accuracy
+        sentence_length.append(length)
+
+    return np.array(embedding_index), np.array(hash_representation), np.array(pos), np.array(label), np.array(sentence_length), sentences
+                      
 
 def prepare_ner(batch, trigram=False, step_length=ner_step_length):
 
