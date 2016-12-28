@@ -55,7 +55,8 @@ print()
 
 word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=' ', header=None)
 word_embedding = word_embedding.values
-word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.randn(1,emb_length)])
+#word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.randn(1,emb_length)])
+word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.uniform(-1,1,(1,emb_length))])
 
 embed_index_input_1 = Input(shape=(step_length,))
 embed_index_input_2 = Input(shape=(step_length,))
@@ -75,7 +76,7 @@ dp_2 = Dropout(0.5)(hidden_2)
 output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
 model = Model(input=[embed_index_input_1,embed_index_input_2, embed_index_input_3,pos_input], output=output)
 
-rmsprop = RMSprop(lr=0.0002)
+rmsprop = RMSprop(lr=0.0005)
 
 model.compile(loss='categorical_crossentropy',
               optimizer=rmsprop,

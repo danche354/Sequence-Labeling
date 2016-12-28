@@ -218,6 +218,7 @@ def prepare_additional(batch, task='chunk'):
                 # start with upper
                 if first_ele.isupper():
                     spelling[6] = 1
+
             # start with digit
             elif first_ele.isdigit():
                 spelling[7] = 1

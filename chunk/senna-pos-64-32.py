@@ -54,7 +54,7 @@ print()
 
 word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=' ', header=None)
 word_embedding = word_embedding.values
-word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.randn(1,emb_length)])
+word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.uniform(-1,1,(1,emb_length))])
 
 embed_index_input = Input(shape=(step_length,))
 embedding = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input)
