@@ -42,8 +42,8 @@ model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, hash_repersentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=[each])
-    hash_repesentation = [each.toarray() for each in hash_repesentation]
+    embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=[each])
+    hash_repesentation = [each_h.toarray() for each_h in hash_repesentation]
     hash_repesentation = np.array([np.concatenate([h, np.zeros((step_length-length[l], feature_length))]) for l, h in enumerate(hash_repesentation)])
 
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])

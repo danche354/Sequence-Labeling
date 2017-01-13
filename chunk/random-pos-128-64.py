@@ -52,6 +52,13 @@ print('train shape:', train_samples)
 print('dev shape:', dev_samples)
 print()
 
+#train_token = []
+#test_token = []
+#[train_token.extend(list(each[0])) for each in train_data]
+#[test_token.extend(list(each[0])) for each in dev_data]
+#print(len(train_token))
+#print(len(test_token))
+
 #word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=' ', header=None)
 word_embedding = np.random.uniform(-1,1,(hash_vocab+1, hash_length))
 word_embedding = np.concatenate([np.zeros((1,hash_length)),word_embedding])

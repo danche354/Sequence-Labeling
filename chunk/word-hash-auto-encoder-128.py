@@ -28,7 +28,7 @@ feature_length = conf.chunk_feature_length
 
 split_rate = conf.chunk_split_rate
 batch_size = conf.word_batch_size
-nb_epoch = conf.nb_epoch
+nb_epoch = conf.word_nb_epoch
 
 model_name = os.path.basename(__file__)[:-3]
 

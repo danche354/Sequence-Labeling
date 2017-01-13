@@ -10,9 +10,11 @@ embedding_dict = conf.senna_dict
 emb_vocab = conf.senna_vocab
 
 chunk_hash_dict = conf.chunk_hash_dict
+chunk_hash_dict_2 = conf.chunk_hash_dict_2
 chunk_hash_vocab = conf.chunk_hash_vocab
 
 ner_hash_dict = conf.ner_hash_dict
+ner_hash_dict_2 = conf.ner_hash_dict_2
 ner_hash_vocab = conf.ner_hash_vocab
 
 chunk_step_length = conf.chunk_step_length
@@ -31,11 +33,11 @@ ner_IOB = conf.ner_IOB_encode
 additional_length = conf.additional_length
 
 
-def prepare_auto_encoder(batch, task):
-    word_hashing = hashing.sen2matrix(batch, task)
+def prepare_auto_encoder(batch, task='chunk', gram='tri'):
+    word_hashing = hashing.sen2matrix(batch, task, gram)
     return word_hashing
 
-def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_length):
+def prepare_chunk(batch, trigram=False, gram='tri', chunk_type='NP', step_length=chunk_step_length):
     if chunk_type=='ALL':
         IOB = chunk_ALL_IOB
     else:
@@ -61,7 +63,10 @@ def prepare_chunk(batch, trigram=False, chunk_type='NP', step_length=chunk_step_
             sequence_pos.append('#')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _hash_index = [chunk_hash_dict.get(each.strip().lower(), chunk_hash_vocab+1) for each in sequence]
+        if gram=='tri':
+            _hash_index = [chunk_hash_dict.get(each.strip().lower(), chunk_hash_vocab+1) for each in sequence]
+        elif gram=='bi':
+            _hash_index = [chunk_hash_dict_2.get(each.strip().lower(), chunk_hash_vocab+1) for each in sequence]
         sentences.append(sentence[0])
         _pos = [chunk_POS[each] for each in sequence_pos]
         _label = [IOB[each] for each in sentence[2]]
@@ -126,7 +131,7 @@ def prepare_chunk_raw(batch, trigram=False, chunk_type='NP', step_length=chunk_s
     return np.array(embedding_index), np.array(hash_representation), np.array(pos), np.array(label), np.array(sentence_length), sentences
                       
 
-def prepare_ner(batch, trigram=False, step_length=ner_step_length):
+def prepare_ner(batch, trigram=False, gram='tri', step_length=ner_step_length):
 
     embedding_index = []
     hash_index = []
@@ -153,7 +158,10 @@ def prepare_ner(batch, trigram=False, step_length=ner_step_length):
             sequence_chunk.append('-X-')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _hash_index = [ner_hash_dict.get(each.strip().lower(), ner_hash_vocab+1) for each in sequence]
+        if gram=='tri':
+            _hash_index = [ner_hash_dict.get(each.strip().lower(), ner_hash_vocab+1) for each in sequence]
+        elif gram=='bi':
+            _hash_index = [ner_hash_dict_2.get(each.strip().lower(), ner_hash_vocab+1) for each in sequence]
         sentences.append(sentence[0])
         _pos = [ner_POS[each] for each in sequence_pos]
         _chunk = [ner_chunk[each] for each in sequence_chunk]

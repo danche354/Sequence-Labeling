@@ -55,7 +55,7 @@ print()
 
 hash_embedding = pd.read_csv('../preprocessing/ner-auto-encoder/auto-encoder-embeddings.txt', delimiter=' ', header=None)
 hash_embedding = hash_embedding.values
-hash_embedding = np.concatenate([np.zeros((1,hash_length)),hash_embedding, np.random.randn(1,hash_length)])
+hash_embedding = np.concatenate([np.zeros((1,hash_length)),hash_embedding, np.random.rand(1,hash_length)])
 
 hash_index_input = Input(shape=(step_length,))
 encoder_embedding = Embedding(hash_vocab+2, hash_length, weights=[hash_embedding], mask_zero=True, input_length=step_length)(hash_index_input)

@@ -9,6 +9,9 @@ with open('../preprocessing/senna/senna.json') as j:
 with open('../preprocessing/chunk-auto-encoder/auto_encoder.json') as l:
     chunk_hash_dict = json.load(l)
 
+with open('../preprocessing/chunk-auto-encoder-2/auto_encoder.json') as m:
+    chunk_hash_dict_2 = json.load(m)
+
 chunk_l3g_dict = {}
 
 with open('../preprocessing/chunk-l3g/l3g.txt') as f:
@@ -16,8 +19,18 @@ with open('../preprocessing/chunk-l3g/l3g.txt') as f:
     for i, each in enumerate(chunk_l3g_list):
         chunk_l3g_dict[each] = i
 
+chunk_l2g_dict = {}
+
+with open('../preprocessing/chunk-l2g/l2g.txt') as g:
+    chunk_l2g_list = g.read().strip().split('\n')
+    for i, each in enumerate(chunk_l2g_list):
+        chunk_l2g_dict[each] = i
+
 with open('../preprocessing/ner-auto-encoder/auto_encoder.json') as l:
     ner_hash_dict = json.load(l)
+
+with open('../preprocessing/ner-auto-encoder-2/auto_encoder.json') as m:
+    ner_hash_dict_2 = json.load(m)
 
 ner_l3g_dict = {}
 
@@ -26,12 +39,21 @@ with open('../preprocessing/ner-l3g/l3g.txt') as f:
     for i, each in enumerate(ner_l3g_list):
         ner_l3g_dict[each] = i
 
+ner_l2g_dict = {}
+
+with open('../preprocessing/ner-l2g/l2g.txt') as f:
+    ner_l2g_list = f.read().strip().split('\n')
+    for i, each in enumerate(ner_l2g_list):
+        ner_l2g_dict[each] = i
 
 chunk_step_length = 80
 chunk_feature_length = 8616
 
+chunk_feature_length_2 = 1072
+
 ner_step_length = 126
 ner_feature_length = 11313
+ner_feature_length_2 = 1233
 
 senna_length = 50
 senna_vocab = 130000
@@ -62,6 +84,8 @@ ner_IOB_length = 9
 
 word_batch_size = 200
 batch_size = 20
+
+word_nb_epoch = 30
 
 nb_epoch = 40
 
