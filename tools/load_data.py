@@ -51,9 +51,12 @@ def load_chunk(dataset, amount=0, split_rate=0.9, chunk_type='NP'):
 
         return test_data
 
-def load_ner(dataset, amount=0):
+def load_ner(dataset, form='BIO', amount=0):
     if dataset=='eng.train':
-        train_set = open('../dataset/ner/eng.train', 'r')
+        if form=='BIO':
+            train_set = open('../dataset/ner/eng.train', 'r')
+        elif form=='BIOES':
+            train_set = open('../dataset/ner_BIOES/eng.train', 'r')
         train_set = train_set.read().strip().split('\n\n')
 
         if amount!=0:
@@ -64,7 +67,10 @@ def load_ner(dataset, amount=0):
         return train_set
 
     elif dataset=='eng.testa':
-        dev_set = open('../dataset/ner/eng.testa', 'r')
+        if form=='BIO':
+            dev_set = open('../dataset/ner/eng.testa', 'r')
+        elif form=='BIOES':
+            dev_set = open('../dataset/ner_BIOES/eng.testa', 'r')
         dev_set = dev_set.read().strip().split('\n\n')
 
         dev_set = list(map(str2tuple, dev_set))
@@ -72,7 +78,10 @@ def load_ner(dataset, amount=0):
         return dev_set
 
     elif dataset=='eng.testb':
-        test_set = open('../dataset/ner/eng.testb', 'r')
+        if form=='BIO':
+            test_set = open('../dataset/ner/eng.testb', 'r')
+        elif form=='BIOES':
+            test_set = open('../dataset/ner_BIOES/eng.testb', 'r')
         test_set = test_set.read().strip().split('\n\n')
 
         test_set = list(map(str2tuple, test_set))

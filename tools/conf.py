@@ -81,6 +81,7 @@ chunk_split_rate = 0.9
 
 ner_chunk_length = 18
 ner_IOB_length = 9
+ner_BIOES_length = 17
 
 word_batch_size = 200
 batch_size = 20
@@ -97,7 +98,15 @@ ner_IOB_encode = {'B-LOC':0, 'I-LOC':1, 'B-MISC':2, 'I-MISC':3,
 ner_IOB_decode = {0:'B-LOC', 1:'I-LOC', 2:'B-MISC', 3:'I-MISC',
             4:'B-ORG', 5:'I-ORG', 6:'B-PER', 7:'I-PER', 8:'O'}
 
-['B-LOC', 'B-ORG', 'B-MISC', 'I-LOC', 'I-MISC', 'O', 'I-ORG', 'I-PER']
+ner_BIOES_encode = {'B-LOC':0, 'I-LOC':1, 'E-LOC':2, 'S-LOC':3,
+                    'B-MISC':4, 'I-MISC':5, 'E-MISC':6, 'S-MISC':7,
+                    'B-ORG':8, 'I-ORG':9, 'E-ORG':10, 'S-ORG':11,
+                    'B-PER':12, 'I-PER':13, 'E-PER':14, 'S-PER':15, 'O':16}
+ner_BIOES_decode = {0:'B-LOC', 1:'I-LOC', 2:'E-LOC', 3:'S-LOC',
+                    4:'B-MISC', 5:'I-MISC', 6:'E-MISC', 7:'S-MISC',
+                    8:'B-ORG', 9:'I-ORG', 10:'E-ORG', 11:'S-ORG',
+                    12:'B-PER', 13:'I-PER', 14:'E-PER', 15:'S-PER', 16:'O'}
+
 
 chunk_ALL_IOB_encode = {'B-ADVP':0, 'I-ADVP':1, 'B-ADJP':2, 'I-ADJP':3,
     'B-CONJP':4, 'I-CONJP':5, 'B-INTJ':6, 'I-INTJ':7,

@@ -91,6 +91,7 @@ ENV/
 # folder
 chunk/model/
 ner/model/
+ner_BIOES/model/
 
 # additional
 .DS_Store
@@ -101,3 +102,4 @@ ner/model/
 # dataset for privacy
 dataset/chunk/*
 dataset/ner/*
+dataset/ner_BIOES/*

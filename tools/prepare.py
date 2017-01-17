@@ -29,6 +29,7 @@ chunk_POS = conf.chunk_POS_encode
 ner_POS = conf.ner_POS_encode
 ner_chunk = conf.ner_chunk_encode
 ner_IOB = conf.ner_IOB_encode
+ner_BIOES = conf.ner_BIOES_encode
 
 additional_length = conf.additional_length
 
@@ -131,7 +132,7 @@ def prepare_chunk_raw(batch, trigram=False, chunk_type='NP', step_length=chunk_s
     return np.array(embedding_index), np.array(hash_representation), np.array(pos), np.array(label), np.array(sentence_length), sentences
                       
 
-def prepare_ner(batch, trigram=False, gram='tri', step_length=ner_step_length):
+def prepare_ner(batch, form='BIO', trigram=False, gram='tri', step_length=ner_step_length):
 
     embedding_index = []
     hash_index = []
@@ -165,7 +166,10 @@ def prepare_ner(batch, trigram=False, gram='tri', step_length=ner_step_length):
         sentences.append(sentence[0])
         _pos = [ner_POS[each] for each in sequence_pos]
         _chunk = [ner_chunk[each] for each in sequence_chunk]
-        _label = [ner_IOB[each] for each in sentence[3]]
+        if form=="BIO":
+            _label = [ner_IOB[each] for each in sentence[3]]
+        elif form=="BIOES":
+            _label = [ner_BIOES[each] for each in sentence[3]]
         length = len(_label)
 
         _label.extend([0]*(step_length-length))
