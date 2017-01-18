@@ -46,6 +46,23 @@ with open('../preprocessing/ner-l2g/l2g.txt') as f:
     for i, each in enumerate(ner_l2g_list):
         ner_l2g_dict[each] = i
 
+
+
+def gazetteer(data):
+    word_dict = {}
+    with open(data, 'r') as f:
+        word_list = f.read().strip().split()
+        for i, word in enumerate(word_list):
+            # 0 for masking
+            word_dict[word] = i
+    return word_dict
+
+LOC = gazetteer('../preprocessing/senna/ner.loc.lst')        
+PER = gazetteer('../preprocessing/senna/ner.per.lst')        
+ORG = gazetteer('../preprocessing/senna/ner.org.lst')        
+MISC = gazetteer('../preprocessing/senna/ner.misc.lst')        
+gazetteer_length = 4
+
 chunk_step_length = 80
 chunk_feature_length = 8616
 

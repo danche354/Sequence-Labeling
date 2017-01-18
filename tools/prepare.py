@@ -32,7 +32,11 @@ ner_IOB = conf.ner_IOB_encode
 ner_BIOES = conf.ner_BIOES_encode
 
 additional_length = conf.additional_length
-
+LOC = conf.LOC
+PER = conf.PER
+ORG = conf.ORG
+MISC = conf.MISC
+gazetteer_length = conf.gazetteer_length
 
 def prepare_auto_encoder(batch, task='chunk', gram='tri'):
     word_hashing = hashing.sen2matrix(batch, task, gram)
@@ -187,6 +191,86 @@ def prepare_ner(batch, form='BIO', trigram=False, gram='tri', step_length=ner_st
     return np.array(embedding_index), np.array(hash_index), np.array(pos), np.array(chunk), np.array(label), np.array(sentence_length), sentences
 
 
+def prepare_gazetteer(batch):
+    step_length = ner_step_length
+    gazetteer_feature = []
+    sentence_length = []
+    for sentence in batch:
+        sequence = list(sentence[0])
+        length = len(sequence)
+        sentence_length.append(length)
+        _gazetteer_feature = np.zeros((length, gazetteer_length))
+        for i, word in enumerate(sequence):
+            gazetteer = np.zeros(gazetteer_length)
+            if word in LOC:
+                gazetteer[0] = 1
+            if word in ORG:
+                gazetteer[1] = 1
+            if word in PER:
+                gazetteer[2] = 1
+            if word in MISC:
+                gazetteer[3] = 1
+            _gazetteer_feature[i] = gazetteer
+        
+        for i in range(length-1):
+            word = sequence[i] + " " + sequence[i+1]
+            gazetteer = np.zeros((2, gazetteer_length))
+            if word in LOC:
+                gazeteer[:,0] = 1
+            if word in ORG:
+                gazetteer[:,1] = 1
+            if word in PER:
+                gazetteer[:,2] = 1
+            if word in MISC:
+                gazetteer[:,3] = 1
+            _gazetteer_feature[i:i+2] = gazetteer
+
+
+        for i in range(length-2):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2]
+            gazetteer = np.zeros((3, gazetteer_length))
+            if word in LOC:
+                gazeteer[:,0] = 1
+            if word in ORG:
+                gazetteer[:,1] = 1
+            if word in PER:
+                gazetteer[:,2] = 1
+            if word in MISC:
+                gazetteer[:,3] = 1
+            _gazetteer_feature[i:i+3] = gazetteer
+            
+        for i in range(length-3):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3]
+            gazetteer = np.zeros((4, gazetteer_length))
+            if word in LOC:
+                gazeteer[:,0] = 1
+            if word in ORG:
+                gazetteer[:,1] = 1
+            if word in PER:
+                gazetteer[:,2] = 1
+            if word in MISC:
+                gazetteer[:,3] = 1
+            _gazetteer_feature[i:i+4] = gazetteer
+        
+        for i in range(length-4):
+            word = sequence[i] + " "  + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3] + " " + sequence[i+4]
+            gazetteer = np.zeros((5, gazetteer_length))
+            if word in LOC:
+                gazeteer[:,0] = 1
+            if word in ORG:
+                gazetteer[:,1] = 1
+            if word in PER:
+                gazetteer[:,2] = 1
+            if word in MISC:
+                gazetteer[:,3] = 1
+            _gazetteer_feature[i:i+5] = gazetteer
+        
+        gazetteer_feature.append(_gazetteer_feature)
+    return np.array(gazetteer_feature), np.array(sentence_length)
+
+
+
+    
 def prepare_additional(batch, task='chunk'):
     if task=='chunk':
         step_length = chunk_step_length
