@@ -51,7 +51,7 @@ with open('../preprocessing/ner-l2g/l2g.txt') as f:
 def gazetteer(data):
     word_dict = {}
     with open(data, 'r') as f:
-        word_list = f.read().strip().split()
+        word_list = f.read().strip().split('\n')
         for i, word in enumerate(word_list):
             # 0 for masking
             word_dict[word] = i

@@ -197,6 +197,7 @@ def prepare_gazetteer(batch):
     sentence_length = []
     for sentence in batch:
         sequence = list(sentence[0])
+        sequence = [each.strip().lower() for each in sequence]
         length = len(sequence)
         sentence_length.append(length)
         _gazetteer_feature = np.zeros((length, gazetteer_length))
@@ -213,61 +214,235 @@ def prepare_gazetteer(batch):
             _gazetteer_feature[i] = gazetteer
         
         for i in range(length-1):
+            flag = False
             word = sequence[i] + " " + sequence[i+1]
             gazetteer = np.zeros((2, gazetteer_length))
             if word in LOC:
-                gazeteer[:,0] = 1
+                gazetteer[:,0] = 1
+                flag = True
             if word in ORG:
                 gazetteer[:,1] = 1
+                flag = True
             if word in PER:
                 gazetteer[:,2] = 1
+                flag = True
             if word in MISC:
                 gazetteer[:,3] = 1
-            _gazetteer_feature[i:i+2] = gazetteer
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+2] = gazetteer
 
 
         for i in range(length-2):
+            flag = False
             word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2]
             gazetteer = np.zeros((3, gazetteer_length))
             if word in LOC:
-                gazeteer[:,0] = 1
+                gazetteer[:,0] = 1
+                flag = True
             if word in ORG:
                 gazetteer[:,1] = 1
+                flag = True
             if word in PER:
                 gazetteer[:,2] = 1
+                flag = True
             if word in MISC:
                 gazetteer[:,3] = 1
-            _gazetteer_feature[i:i+3] = gazetteer
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+3] = gazetteer
             
         for i in range(length-3):
+            flag = False
             word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3]
             gazetteer = np.zeros((4, gazetteer_length))
             if word in LOC:
-                gazeteer[:,0] = 1
+                gazetteer[:,0] = 1
+                flag = True
             if word in ORG:
                 gazetteer[:,1] = 1
+                flag = True
             if word in PER:
                 gazetteer[:,2] = 1
+                flag = True
             if word in MISC:
                 gazetteer[:,3] = 1
-            _gazetteer_feature[i:i+4] = gazetteer
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+4] = gazetteer
         
         for i in range(length-4):
+            flag = False
             word = sequence[i] + " "  + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3] + " " + sequence[i+4]
             gazetteer = np.zeros((5, gazetteer_length))
             if word in LOC:
-                gazeteer[:,0] = 1
+                gazetteer[:,0] = 1
+                flag = True
             if word in ORG:
                 gazetteer[:,1] = 1
+                flag = True
             if word in PER:
                 gazetteer[:,2] = 1
+                flag = True
             if word in MISC:
                 gazetteer[:,3] = 1
-            _gazetteer_feature[i:i+5] = gazetteer
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+5] = gazetteer
         
         gazetteer_feature.append(_gazetteer_feature)
     return np.array(gazetteer_feature), np.array(sentence_length)
 
+def prepare_gazetteer_BIOES(batch):
+    step_length = ner_step_length
+    gazetteer_feature = []
+    sentence_length = []
+    for sentence in batch:
+        sequence = list(sentence[0])
+        sequence = [each.strip().lower() for each in sequence]
+        length = len(sequence)
+        sentence_length.append(length)
+        _gazetteer_feature = np.zeros((length, gazetteer_length))
+
+        i = 0
+        while (i<length):
+            gazetteer = np.zeros(gazetteer_length)
+            if word in LOC:
+                gazetteer[3] = 1
+            if word in ORG:
+                gazetteer[7] = 1
+            if word in PER:
+                gazetteer[11] = 1
+            if word in MISC:
+                gazetteer[15] = 1
+            _gazetteer_feature[i] = gazetteer
+            i = i+1
+
+        i = 0
+        flag = False
+        while (i<length-1):
+            word = sequence[i] + " " + sequence[i+1]
+            gazetteer = np.zeros((2, gazetteer_length))
+            if word in LOC:
+                gazetteer[0,0] = 1
+                gazetteer[1,2] = 1
+                flag = True
+            if word in ORG:
+                gazetteer[0,4] = 1
+                gazetteer[1,6] = 1
+                flag = True
+            if word in PER:
+                gazetteer[0,8] = 1
+                gazetteer[1,10] = 1
+                flag = True
+            if word in MISC:
+                gazetteer[0,12] = 1
+                gazetteer[1,14] = 1
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+2] = gazetteer
+                i = i+2
+                flag = False
+            else:
+                i = i+1
+
+        i = 0
+        flag = False
+        while (i<length-2):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2]
+            gazetteer = np.zeros((3, gazetteer_length))
+            if word in LOC:
+                gazetteer[0,0] = 1
+                gazetteer[1,1] = 1
+                gazetteer[2,2] = 1
+                flag = True
+            if word in ORG:
+                gazetteer[0,4] = 1
+                gazetteer[1,5] = 1
+                gazetteer[2,6] = 1
+                flag = True
+            if word in PER:
+                gazetteer[0,8] = 1
+                gazetteer[1,9] = 1
+                gazetteer[2,10] = 1
+                flag = True
+            if word in MISC:
+                gazetteer[0,12] = 1
+                gazetteer[1,13] = 1
+                gazetteer[2,14] = 1
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+3] = gazetteer
+                i = i+3
+                flag = False
+            else:
+                i = i+1
+
+        i = 0
+        flag = False
+        while (i<length-3):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3]
+            gazetteer = np.zeros((4, gazetteer_length))
+            if word in LOC:
+                gazetteer[0,0] = 1
+                gazetteer[1:3,1] = 1
+                gazetteer[3,2] = 1
+                flag = True
+            if word in ORG:
+                gazetteer[0,4] = 1
+                gazetteer[1:3,5] = 1
+                gazetteer[3,6] = 1
+                flag = True
+            if word in PER:
+                gazetteer[0,8] = 1
+                gazetteer[1:3,9] = 1
+                gazetteer[3,10] = 1
+                flag = True
+            if word in MISC:
+                gazetteer[0,12] = 1
+                gazetteer[1:3,13] = 1
+                gazetteer[3,14] = 1
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+4] = gazetteer
+                i = i+4
+                flag = False
+            else:
+                i = i+1
+
+        i = 0
+        flag = False
+        while (i<length-4):
+            word = sequence[i] + " "  + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3] + " " + sequence[i+4]
+            gazetteer = np.zeros((5, gazetteer_length))
+            if word in LOC:
+                gazetteer[0,0] = 1
+                gazetteer[1:4,1] = 1
+                gazetteer[4,2] = 1
+                flag = True
+            if word in ORG:
+                gazetteer[0,4] = 1
+                gazetteer[1:4,5] = 1
+                gazetteer[4,6] = 1
+                flag = True
+            if word in PER:
+                gazetteer[0,8] = 1
+                gazetteer[1:4,9] = 1
+                gazetteer[4,10] = 1
+                flag = True
+            if word in MISC:
+                gazetteer[0,12] = 1
+                gazetteer[1:4,13] = 1
+                gazetteer[4,14] = 1
+                flag = True
+            if flag:
+                _gazetteer_feature[i:i+5] = gazetteer
+                i = i+5
+                flag = False
+            else:
+                i = i+1
+        gazetteer_feature.append(_gazetteer_feature)
+    return np.array(gazetteer_feature), np.array(sentence_length)
 
 
     
