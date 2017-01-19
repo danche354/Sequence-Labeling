@@ -23,11 +23,11 @@ from tools import prepare
 step_length = conf.ner_step_length
 pos_length = conf.ner_pos_length
 chunk_length = conf.ner_chunk_length
-gazetteer_length = conf.gazetteer_length
+gazetteer_length = conf.BIOES_gazetteer_length
 
-IOB = conf.ner_BIOES_decode
+IOB = conf.ner_IOB_decode
 
-test_data = load_data.load_ner(dataset='eng.testb', form='BIOES')
+test_data = load_data.load_ner(dataset='eng.testb')
 
 best_epoch = sys.argv[1]
 
@@ -37,35 +37,16 @@ folder_path = './model/%s'%model_name
 model_path = '%s/model_epoch_%s.h5'%(folder_path, best_epoch)
 result = open('%s/predict.txt'%folder_path, 'w')
 
-def convert(chunktags):
-    # convert BIOES to BIO
-    for p, q in enumerate(chunktags):
-        if q.startswith("E-"):
-            chunktags[p] = "I-" + q[2:]
-        elif q.startswith("S-"):
-            if p==0:
-                chunktags[p] = "I-" + q[2:]
-            elif q[2:]==chunktags[p-1][2:]:
-                chunktags[p] = "B-" + q[2:]
-            elif q[2:]!=chunktags[p-1][2:]:
-                chunktags[p] = "I-" + q[2:]
-        elif q.startswith("B-"):
-            if p==0:
-                chunktags[p] = "I-" + q[2:]
-            else:
-                if q[2:]!=chunktags[p-1][2:]:
-                    chunktags[p] = "I-" + q[2:]
-    return chunktags
 
 print('loading model...')
 model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=[each], gram='bi', form='BIOES')
+    embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=[each], gram='bi')
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
     chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
-    gazetteer, length_2 = prepare.prepare_gazetteer(batch=[each])
+    gazetteer, length_2 = prepare.prepare_gazetteer_BIOES(batch=[each])
     gazetteer = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], gazetteer_length))])) for l,a in enumerate(gazetteer)])
     prob = model.predict_on_batch([embed_index, hash_index, pos, chunk, gazetteer])
 
@@ -74,15 +55,6 @@ for each in test_data:
         chunktags = [IOB[j] for j in predict_label][:l]
 
     word_pos_chunk = list(zip(*each))
-    
-    # convert
-    word_pos_chunk = list(zip(*word_pos_chunk))
-    word_pos_chunk = [list(x) for x in word_pos_chunk]
-    word_pos_chunk[3] = convert(word_pos_chunk[3])
-    word_pos_chunk = list(zip(*word_pos_chunk))
-
-    #convert
-    chunktags = convert(chunktags) 
 
     for ind, chunktag in enumerate(chunktags):
         result.write(' '.join(word_pos_chunk[ind])+' '+chunktag+'\n')

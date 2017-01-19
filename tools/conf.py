@@ -62,6 +62,29 @@ PER = gazetteer('../preprocessing/senna/ner.per.lst')
 ORG = gazetteer('../preprocessing/senna/ner.org.lst')        
 MISC = gazetteer('../preprocessing/senna/ner.misc.lst')        
 gazetteer_length = 4
+BIOES_gazetteer_length = 16
+
+LOC_conll = {}
+PER_conll = {}
+ORG_conll = {}
+MISC_conll = {}
+
+with open('../preprocessing/gazetteer/eng.list', 'r') as f:
+    word_list = f.read().strip().split('\n')
+    for i, word in enumerate(word_list):
+        word_split = word.split(" ", 1)
+        key = word_split[0].strip()
+        value = word_split[1].strip()
+        if key=='LOC':
+            LOC_conll[value] = i
+        elif key=='PER':
+            PER_conll[value] = i
+        elif key=='ORG':
+            ORG_conll[value] = i
+        elif key=='MISC':
+            MISC_conll[value] = i
+        else:
+            raise Exception('NAME ERROR!')
 
 chunk_step_length = 80
 chunk_feature_length = 8616
