@@ -36,7 +36,7 @@ emb_length = conf.senna_length
 hash_vocab = conf.ner_hash_vocab
 hash_length = conf.ner_hash_length
 
-output_length = conf.ner_IOB_length
+output_length = conf.ner_BIOES_length
 
 batch_size = conf.batch_size
 nb_epoch = conf.nb_epoch
@@ -48,8 +48,8 @@ if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
-train_data = load_data.load_ner(dataset='eng.train')
-dev_data = load_data.load_ner(dataset='eng.testa')
+train_data = load_data.load_ner(dataset='eng.train', form='BIOES')
+dev_data = load_data.load_ner(dataset='eng.testa', form='BIOES')
 
 train_samples = len(train_data)
 dev_samples = len(dev_data)
@@ -126,11 +126,11 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=train_batch, gram='bi')
+        embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=train_batch, form='BIOES', gram='bi')
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
-        gazetteer, length_2 = prepare.prepare_gazetteer_BIOES(batch=train_batch, gazetteer='conll')
+        gazetteer, length_2 = prepare.prepare_gazetteer_BIOES(batch=train_batch)
         gazetteer = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], gazetteer_length))])) for l,a in enumerate(gazetteer)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
 
@@ -143,11 +143,11 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=dev_batch, gram='bi')
+        embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=dev_batch, form='BIOES', gram='bi')
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
         chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
-        gazetteer, length_2 = prepare.prepare_gazetteer_BIOES(batch=dev_batch, gazetteer='conll')
+        gazetteer, length_2 = prepare.prepare_gazetteer_BIOES(batch=dev_batch)
         gazetteer = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], gazetteer_length))])) for l,a in enumerate(gazetteer)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
         # for loss
