@@ -39,7 +39,7 @@ hash_length = conf.ner_hash_length
 output_length = conf.ner_BIOES_length
 
 batch_size = conf.batch_size
-nb_epoch = conf.nb_epoch
+nb_epoch = 60 #conf.nb_epoch
 
 model_name = os.path.basename(__file__)[:-3]
 
