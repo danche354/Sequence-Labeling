@@ -39,7 +39,7 @@ output_length = conf.chunk_NP_length
 
 split_rate = conf.chunk_split_rate
 batch_size = conf.batch_size
-nb_epoch = 60 #conf.nb_epoch
+nb_epoch = 50 #conf.nb_epoch
 
 model_name = os.path.basename(__file__)[:-3]
 

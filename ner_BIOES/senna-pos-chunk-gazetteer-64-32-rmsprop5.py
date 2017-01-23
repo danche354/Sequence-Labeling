@@ -26,15 +26,19 @@ from tools import plot
 np.random.seed(0)
 
 # train hyperparameters
-step_length = conf.chunk_step_length
-pos_length = conf.chunk_pos_length
+step_length = conf.ner_step_length
+pos_length = conf.ner_pos_length
+chunk_length = conf.ner_chunk_length
+gazetteer_length = conf.gazetteer_length
 
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
 
-output_length = conf.chunk_NP_length
+hash_vocab = conf.ner_hash_vocab
+hash_length = conf.ner_hash_length
 
-split_rate = conf.chunk_split_rate
+output_length = conf.ner_BIOES_length
+
 batch_size = conf.batch_size
 nb_epoch = 70 #conf.nb_epoch
 
@@ -45,7 +49,8 @@ if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
-train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+train_data = load_data.load_ner(dataset='eng.train', form='BIOES')
+dev_data = load_data.load_ner(dataset='eng.testa', form='BIOES')
 
 train_samples = len(train_data)
 dev_samples = len(dev_data)
@@ -61,15 +66,17 @@ embed_index_input = Input(shape=(step_length,))
 embedding = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input)
 
 pos_input = Input(shape=(step_length, pos_length))
+chunk_input = Input(shape=(step_length, chunk_length))
+gazetteer_input = Input(shape=(step_length, gazetteer_length))
 
-senna_pos_merge = merge([embedding, pos_input], mode='concat')
-input_mask = Masking(mask_value=0)(senna_pos_merge)
+senna_pos_chunk_gazetteer_merge = merge([embedding, pos_input, chunk_input, gazetteer_input], mode='concat')
+input_mask = Masking(mask_value=0)(senna_pos_chunk_gazetteer_merge)
 dp_1 = Dropout(0.5)(input_mask)
 hidden_1 = Bidirectional(LSTM(64, return_sequences=True))(dp_1)
 hidden_2 = Bidirectional(LSTM(32, return_sequences=True))(hidden_1)
 dp_2 = Dropout(0.5)(hidden_2)
 output = TimeDistributed(Dense(output_length, activation='softmax'))(dp_2)
-model = Model(input=[embed_index_input,pos_input], output=output)
+model = Model(input=[embed_index_input,pos_input,chunk_input, gazetteer_input], output=output)
 
 rmsprop = RMSprop(lr=0.0005)
 
@@ -115,12 +122,15 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=train_batch)
+        embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=train_batch, form='BIOES', gram='bi')
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
+        chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
+        gazetteer, length_2 = prepare.prepare_gazetteer(batch=train_batch)
+        gazetteer = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], gazetteer_length))])) for l,a in enumerate(gazetteer)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
 
-        train_metrics = model.train_on_batch([embed_index, pos], y)
+        train_metrics = model.train_on_batch([embed_index, pos, chunk, gazetteer], y)
         train_loss += train_metrics[0]
     all_train_loss.append(train_loss)
 
@@ -129,16 +139,19 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, hash_index, pos, label, length, sentence = prepare.prepare_chunk(batch=dev_batch)
+        embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=dev_batch, form='BIOES', gram='bi')
 
         pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
+        chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
+        gazetteer, length_2 = prepare.prepare_gazetteer(batch=dev_batch)
+        gazetteer = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], gazetteer_length))])) for l,a in enumerate(gazetteer)])
         y = np.array([np_utils.to_categorical(each, output_length) for each in label])
         # for loss
-        dev_metrics = model.test_on_batch([embed_index, pos], y)
+        dev_metrics = model.test_on_batch([embed_index, pos, chunk, gazetteer], y)
         dev_loss += dev_metrics[0]
 
         # for accuracy
-        prob = model.predict_on_batch([embed_index, pos])
+        prob = model.predict_on_batch([embed_index, pos, chunk, gazetteer])
         for i, l in enumerate(length):
             predict_label = np_utils.categorical_probas_to_classes(prob[i])
             correct_predict += np.sum(predict_label[:l]==label[i][:l])
