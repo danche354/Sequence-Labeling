@@ -49,7 +49,7 @@ if not os.path.isdir(folder_path):
     os.makedirs(folder_path)
 
 # the data, shuffled and split between train and test sets
-train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate, amount=10)
+train_data, dev_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
 
 train_samples = len(train_data)
 dev_samples = len(dev_data)
