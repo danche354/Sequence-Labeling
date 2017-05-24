@@ -73,7 +73,7 @@ print('loading model finished.')
 for each in test_data:
     embed_index, hash_representation, pos, chunk, label, length, sentence = prepare.prepare_ner_raw(batch=[each], gram='bi', form='BIOES')
     
-    hash_representation = [each.toarray() for each in hash_representation]
+    hash_representation = [each_h.toarray() for each_h in hash_representation]
     hash_representation = np.array([np.concatenate([h, np.zeros((step_length-length[l], feature_length))]) for l, h in enumerate(hash_representation)])
 
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
