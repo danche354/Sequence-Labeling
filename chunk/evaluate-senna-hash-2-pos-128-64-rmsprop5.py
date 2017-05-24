@@ -10,6 +10,8 @@ import numpy as np
 import os
 import sys
 
+np.random.seed(0)
+
 # add path
 sys.path.append('../')
 sys.path.append('../tools')
@@ -25,9 +27,14 @@ pos_length = conf.chunk_pos_length
 
 IOB = conf.chunk_NP_IOB_decode
 
-test_data = load_data.load_chunk(dataset='test.txt')
+data = sys.argv[1]
 
-best_epoch = sys.argv[1]
+best_epoch = sys.argv[2]
+
+if data=="dev":
+    train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+elif data == "test":
+    test_data = load_data.load_chunk(dataset='test.txt')
 
 model_name = os.path.basename(__file__)[9:-3]
 folder_path = './model/%s'%model_name
