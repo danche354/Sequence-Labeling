@@ -69,7 +69,7 @@ print('loading model...')
 model = load_model(model_path)
 print('loading model finished.')
 
-for each in test_data:
+for each in test_data[:20]:
     embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=[each], gram='bi', form='BIOES')
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
     chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
@@ -92,8 +92,8 @@ for each in test_data:
 
     #convert
     if data == "test":
-        chunktags = convert(chunktags) 
-
+        chunktags = convert(chunktags)
+    chunktags = prepare.gazetteer_lookup(each[0], chunktags, data)
     for ind, chunktag in enumerate(chunktags):
         result.write(' '.join(word_pos_chunk[ind])+' '+chunktag+'\n')
     result.write('\n')
