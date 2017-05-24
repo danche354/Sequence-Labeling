@@ -27,6 +27,8 @@ pos_length = conf.chunk_pos_length
 
 IOB = conf.chunk_NP_IOB_decode
 
+split_rate = conf.chunk_split_rate
+
 data = sys.argv[1]
 
 best_epoch = sys.argv[2]
