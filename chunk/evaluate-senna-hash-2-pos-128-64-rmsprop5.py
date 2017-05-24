@@ -14,11 +14,11 @@ import sys
 sys.path.append('../')
 sys.path.append('../tools')
 
-np.random.seed(0)
-
 from tools import conf
 from tools import load_data
 from tools import prepare
+
+np.random.seed(0)
 
 # input sentence dimensions
 step_length = conf.chunk_step_length
@@ -36,7 +36,8 @@ if data=="dev":
     train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
 elif data == "test":
     test_data = load_data.load_chunk(dataset='test.txt')
-
+tokens = [len(x[0]) for x in test_data]
+print(sum(tokens))
 print('%s shape:'%data, len(test_data))
 
 model_name = os.path.basename(__file__)[9:-3]
