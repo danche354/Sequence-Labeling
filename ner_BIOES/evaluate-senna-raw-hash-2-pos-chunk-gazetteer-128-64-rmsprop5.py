@@ -24,6 +24,7 @@ step_length = conf.ner_step_length
 pos_length = conf.ner_pos_length
 chunk_length = conf.ner_chunk_length
 gazetteer_length = conf.gazetteer_length
+feature_length = conf.ner_feature_length_2
 
 IOB = conf.ner_BIOES_decode
 
