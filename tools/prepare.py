@@ -566,3 +566,229 @@ def prepare_additional(batch, task='chunk'):
             spelling_feature[i] = spelling
         additional_feature.append(spelling_feature)
     return np.array(additional_feature), np.array(sentence_length)
+
+
+def gazetteer_lookup(batch, chunktag, data, gazetteer='senna'):
+    if data=="test":
+        if gazetteer == 'senna':
+            LOC = conf.LOC
+            PER = conf.PER
+            ORG = conf.ORG
+            MISC = conf.MISC
+        elif gazetteer == 'conll':
+            LOC = conf.LOC_conll
+            PER = conf.PER_conll
+            ORG = conf.ORG_conll
+            MISC = conf.MISC_conll
+
+        sequence = [each.strip().lower() for each in batch]
+        length = len(sequence)
+        for i, word in enumerate(sequence):
+            print(word)
+            if word in LOC:
+                chunktag[i] = "I-LOC"
+            elif word in ORG:
+                chunktag[i] = "I-ORG"
+            elif word in PER:
+                chunktag[i] = "I-PER"
+            elif word in MISC:
+                chunktag[i] = "I-MISC"
+
+        for i in range(length-1):
+            word = sequence[i] + " " + sequence[i+1]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+
+
+        for i in range(length-2):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+                chunktag[i+2] = "I-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+                chunktag[i+2] = "I-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+                chunktag[i+2] = "I-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+                chunktag[i+2] = "I-MISC"
+
+            
+        for i in range(length-3):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+                chunktag[i+2] = "I-LOC"
+                chunktag[i+3] = "I-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+                chunktag[i+2] = "I-ORG"
+                chunktag[i+3] = "I-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+                chunktag[i+2] = "I-PER"
+                chunktag[i+3] = "I-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+                chunktag[i+2] = "I-MISC"
+                chunktag[i+3] = "I-MISC"
+
+
+        for i in range(length-4):
+            word = sequence[i] + " "  + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3] + " " + sequence[i+4]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+                chunktag[i+2] = "I-LOC"
+                chunktag[i+3] = "I-LOC"
+                chunktag[i+4] = "I-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+                chunktag[i+2] = "I-ORG"
+                chunktag[i+3] = "I-ORG"
+                chunktag[i+4] = "I-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+                chunktag[i+2] = "I-PER"
+                chunktag[i+3] = "I-PER"
+                chunktag[i+4] = "I-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+                chunktag[i+2] = "I-MISC"
+                chunktag[i+3] = "I-MISC"
+                chunktag[i+4] = "I-MISC"
+    elif data=="dev":
+        if gazetteer == 'senna':
+            LOC = conf.LOC
+            PER = conf.PER
+            ORG = conf.ORG
+            MISC = conf.MISC
+        elif gazetteer == 'conll':
+            LOC = conf.LOC_conll
+            PER = conf.PER_conll
+            ORG = conf.ORG_conll
+            MISC = conf.MISC_conll
+
+        sequence = [each.strip().lower() for each in batch]
+        length = len(sequence)
+        for i, word in enumerate(sequence):
+            print(word)
+            if word in LOC:
+                chunktag[i] = "S-LOC"
+            elif word in ORG:
+                chunktag[i] = "S-ORG"
+            elif word in PER:
+                chunktag[i] = "S-PER"
+            elif word in MISC:
+                chunktag[i] = "S-MISC"
+
+        for i in range(length-1):
+            word = sequence[i] + " " + sequence[i+1]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "E-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "E-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "E-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "E-MISC"
+
+
+        for i in range(length-2):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+                chunktag[i+2] = "E-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+                chunktag[i+2] = "E-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+                chunktag[i+2] = "E-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+                chunktag[i+2] = "E-MISC"
+
+            
+        for i in range(length-3):
+            word = sequence[i] + " " + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+                chunktag[i+2] = "I-LOC"
+                chunktag[i+3] = "E-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+                chunktag[i+2] = "I-ORG"
+                chunktag[i+3] = "E-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+                chunktag[i+2] = "I-PER"
+                chunktag[i+3] = "E-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+                chunktag[i+2] = "I-MISC"
+                chunktag[i+3] = "E-MISC"
+
+
+        for i in range(length-4):
+            word = sequence[i] + " "  + sequence[i+1] + " " + sequence[i+2] + " "  + sequence[i+3] + " " + sequence[i+4]
+            if word in LOC:
+                chunktag[i] = "B-LOC"
+                chunktag[i+1] = "I-LOC"
+                chunktag[i+2] = "I-LOC"
+                chunktag[i+3] = "I-LOC"
+                chunktag[i+4] = "E-LOC"
+            elif word in ORG:
+                chunktag[i] = "B-ORG"
+                chunktag[i+1] = "I-ORG"
+                chunktag[i+2] = "I-ORG"
+                chunktag[i+3] = "I-ORG"
+                chunktag[i+4] = "E-ORG"
+            elif word in PER:
+                chunktag[i] = "B-PER"
+                chunktag[i+1] = "I-PER"
+                chunktag[i+2] = "I-PER"
+                chunktag[i+3] = "I-PER"
+                chunktag[i+4] = "E-PER"
+            elif word in MISC:
+                chunktag[i] = "B-MISC"
+                chunktag[i+1] = "I-MISC"
+                chunktag[i+2] = "I-MISC"
+                chunktag[i+3] = "I-MISC"
+                chunktag[i+4] = "E-MISC"
+    return chunktag
