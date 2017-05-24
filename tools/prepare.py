@@ -115,7 +115,7 @@ def prepare_chunk_raw(batch, trigram=False, gram='tri', chunk_type='NP', step_le
             sequence_pos.append('#')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _hash_representation = hashing.sen2matrix(sequence, task="chunk", gram=gram)
+        _hash_representation = hashing.sen2matrix(sequence, task="ner", gram=gram)
         sentences.append(sentence[0])
         _pos = [chunk_POS[each] for each in sequence_pos]
         _label = [IOB[each] for each in sentence[2]]
@@ -132,6 +132,54 @@ def prepare_chunk_raw(batch, trigram=False, gram='tri', chunk_type='NP', step_le
         sentence_length.append(length)
 
     return np.array(embedding_index), np.array(hash_representation), np.array(pos), np.array(label), np.array(sentence_length), sentences
+                      
+
+# raw hashing
+def prepare_ner_raw(batch, trigram=False, gram='tri', form='BIO', step_length=ner_step_length):
+    embedding_index = []
+    hash_representation = []
+    pos = []
+    chunk = []
+    label = []
+    sentence_length = []
+    sentences = []
+
+    for sentence in batch:
+        # sentence and sentence pos
+        sequence = list(sentence[0])
+        sequence_pos = list(sentence[1])
+        sequence_chunk = list(sentence[2])
+        # for trigram
+        if trigram:
+            # add start and end mark
+            sequence.insert(0, '#')
+            sequence.append('#')
+            sequence_pos.insert(0, '#')
+            sequence_pos.append('#')
+
+        _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
+        _hash_representation = hashing.sen2matrix(sequence, task="ner", gram=gram)
+        sentences.append(sentence[0])
+        _pos = [ner_POS[each] for each in sequence_pos]
+        _chunk = [ner_chunk[each] for each in sequence_chunk]
+        if form=="BIO":
+            _label = [ner_IOB[each] for each in sentence[3]]
+        elif form=="BIOES":
+            _label = [ner_BIOES[each] for each in sentence[3]]
+        length = len(_label)
+
+        _label.extend([0]*(step_length-length))
+        _embedding_index.extend([0]*(step_length-length))
+
+        embedding_index.append(_embedding_index)
+        hash_representation.append(_hash_representation)
+        pos.append(_pos)
+        chunk.append(_chunk)
+        label.append(_label)
+        # record the sentence length for calculate accuracy
+        sentence_length.append(length)
+
+    return np.array(embedding_index), np.array(hash_representation), np.array(pos), np.array(chunk), np.array(label), np.array(sentence_length), sentences
                       
 
 def prepare_ner(batch, form='BIO', trigram=False, gram='tri', step_length=ner_step_length):

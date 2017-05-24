@@ -27,18 +27,20 @@ gazetteer_length = conf.gazetteer_length
 
 IOB = conf.ner_BIOES_decode
 
-data = sys.argv[1]
+# data = sys.argv[1]
 
-best_epoch = sys.argv[2]
+# best_epoch = sys.argv[2]
 
-if data=="dev":
-    test_data = load_data.load_ner(dataset='eng.testa', form='BIOES')
-elif data == "test":
-    test_data = load_data.load_ner(dataset='eng.testb', form='BIOES')
-tokens = [len(x[0]) for x in test_data]
-print(sum(tokens))
-print('%s shape:'%data, len(test_data))
+# if data=="dev":
+#     test_data = load_data.load_ner(dataset='eng.testa', form='BIOES')
+# elif data == "test":
+#     test_data = load_data.load_ner(dataset='eng.testb', form='BIOES')
+# tokens = [len(x[0]) for x in test_data]
+# print(sum(tokens))
+# print('%s shape:'%data, len(test_data))
+test_data = load_data.load_ner(dataset='eng.testb', form='BIOES')
 
+best_epoch = sys.argv[1]
 
 model_name = os.path.basename(__file__)[9:-3]
 folder_path = './model/%s'%model_name
