@@ -19,6 +19,8 @@ from tools import conf
 from tools import load_data
 from tools import prepare
 
+np.random.seed(0)
+
 # input sentence dimensions
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
@@ -26,9 +28,19 @@ feature_length = conf.chunk_feature_length_2
 
 IOB = conf.chunk_NP_IOB_decode
 
-test_data = load_data.load_chunk(dataset='test.txt')
+split_rate = conf.chunk_split_rate
 
-best_epoch = sys.argv[1]
+data = sys.argv[1]
+
+best_epoch = sys.argv[2]
+
+if data=="dev":
+    train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+elif data == "test":
+    test_data = load_data.load_chunk(dataset='test.txt')
+tokens = [len(x[0]) for x in test_data]
+print(sum(tokens))
+print('%s shape:'%data, len(test_data))
 
 model_name = os.path.basename(__file__)[9:-3]
 folder_path = './model/%s'%model_name

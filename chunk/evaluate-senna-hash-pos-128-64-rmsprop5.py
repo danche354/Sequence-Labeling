@@ -23,6 +23,7 @@ np.random.seed(0)
 # input sentence dimensions
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
+IOB = conf.chunk_NP_IOB_decode
 
 split_rate = conf.chunk_split_rate
 
