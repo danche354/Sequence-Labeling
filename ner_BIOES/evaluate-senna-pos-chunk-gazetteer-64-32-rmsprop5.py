@@ -86,11 +86,13 @@ for each in test_data:
     # convert
     word_pos_chunk = list(zip(*word_pos_chunk))
     word_pos_chunk = [list(x) for x in word_pos_chunk]
-    word_pos_chunk[3] = convert(word_pos_chunk[3])
+    if data == "test":
+        word_pos_chunk[3] = convert(word_pos_chunk[3])
     word_pos_chunk = list(zip(*word_pos_chunk))
 
     #convert
-    chunktags = convert(chunktags) 
+    if data == "test":
+        chunktags = convert(chunktags) 
 
     for ind, chunktag in enumerate(chunktags):
         result.write(' '.join(word_pos_chunk[ind])+' '+chunktag+'\n')
