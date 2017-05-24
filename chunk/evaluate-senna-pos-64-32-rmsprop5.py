@@ -14,11 +14,12 @@ import sys
 sys.path.append('../')
 sys.path.append('../tools')
 
-np.random.seed(0)
-
 from tools import conf
 from tools import load_data
 from tools import prepare
+
+np.random.seed(0)
+
 
 # input sentence dimensions
 step_length = conf.chunk_step_length
