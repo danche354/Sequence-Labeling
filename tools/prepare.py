@@ -584,7 +584,6 @@ def gazetteer_lookup(batch, chunktag, data, gazetteer='senna'):
         sequence = [each.strip().lower() for each in batch]
         length = len(sequence)
         for i, word in enumerate(sequence):
-            print(word)
             if word in LOC:
                 chunktag[i] = "I-LOC"
             elif word in ORG:
