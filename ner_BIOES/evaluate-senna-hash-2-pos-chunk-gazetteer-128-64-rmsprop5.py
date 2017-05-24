@@ -93,7 +93,7 @@ for each in test_data:
     #convert
     if data == "test":
         chunktags = convert(chunktags)
-    chunktags = prepare.gazetteer_lookup(each[0], chunktags, data)
+    # chunktags = prepare.gazetteer_lookup(each[0], chunktags, data)
     for ind, chunktag in enumerate(chunktags):
         result.write(' '.join(word_pos_chunk[ind])+' '+chunktag+'\n')
     result.write('\n')
