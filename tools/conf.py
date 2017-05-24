@@ -115,9 +115,6 @@ chunk_ALL_length = 23
 
 additional_length = 9
 
-chunk_NP_length = 3
-chunk_ALL_length = 23
-
 chunk_split_rate = 0.9
 
 ner_chunk_length = 18
@@ -155,6 +152,13 @@ chunk_ALL_IOB_encode = {'B-ADVP':0, 'I-ADVP':1, 'B-ADJP':2, 'I-ADJP':3,
     'B-PP':12, 'I-PP':13, 'B-PRT':14, 'I-PRT':15,
     'B-SBAR':16, 'I-SBAR':17, 'B-UCP':18,
     'I-UCP':19, 'B-VP':20, 'I-VP':21, 'O':22}
+
+chunk_ALL_IOB_decode = {0:'B-ADVP', 1:'I-ADVP', 2:'B-ADJP', 3:'I-ADJP',
+    4:'B-CONJP', 5:'I-CONJP', 6:'B-INTJ', 7:'I-INTJ',
+    8:'B-LST', 9:'I-LST', 10:'B-NP', 11:'I-NP',
+    12:'B-PP', 13:'I-PP', 14:'B-PRT', 15:'I-PRT',
+    16:'B-SBAR', 17:'I-SBAR', 18:'B-UCP',
+    19:'I-UCP', 20:'B-VP', 21:'I-VP', 22:'O'}
 
 chunk_POS_encode = {'NN':0, 'IN':1, 'NNP':2, 'DT':3, 'NNS':4,
     'JJ':5, ',':6, '.':7, 'CD':8, 'VBD':9, 'RB':10, 'VB':11,
