@@ -10,12 +10,11 @@ import numpy as np
 import os
 import sys
 
-np.random.seed(0)
-
 # add path
 sys.path.append('../')
 sys.path.append('../tools')
 
+np.random.seed(0)
 
 from tools import conf
 from tools import load_data
@@ -37,6 +36,8 @@ if data=="dev":
     train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
 elif data == "test":
     test_data = load_data.load_chunk(dataset='test.txt')
+
+print('%s shape:'%data, len(test_data))
 
 model_name = os.path.basename(__file__)[9:-3]
 folder_path = './model/%s'%model_name
