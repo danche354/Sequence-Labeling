@@ -92,6 +92,7 @@ ENV/
 chunk/model/
 ner/model/
 ner_BIOES/model/
+chunk_all/model/
 
 # additional
 .DS_Store
