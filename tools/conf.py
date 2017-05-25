@@ -72,6 +72,7 @@ MISC_conll = {}
 
 with open('../preprocessing/gazetteer/eng.list', 'r') as f:
     word_list = f.read().strip().split('\n')
+    # word_list = []
     for i, word in enumerate(word_list):
         word_split = word.split(" ", 1)
         key = word_split[0].strip()
