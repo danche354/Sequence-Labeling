@@ -32,7 +32,7 @@ data = sys.argv[1]
 best_epoch = sys.argv[2]
 
 if data=="dev":
-    train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
+    train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate, chunk_type="ALL")
 elif data == "test":
     test_data = load_data.load_chunk(dataset='test.txt')
 tokens = [len(x[0]) for x in test_data]
