@@ -28,7 +28,7 @@ np.random.seed(0)
 # train hyperparameters
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
-feature_length = conf.chunk_feature_length
+feature_length = conf.chunk_feature_length_2
 
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
@@ -125,7 +125,7 @@ for epoch in range(nb_epoch):
 
     for i in range(number_of_train_batches):
         train_batch = train_data[i*batch_size: (i+1)*batch_size]
-        embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=train_batch, gram='tri', chunk_type='ALL')
+        embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=train_batch, gram='bi', chunk_type='ALL')
         hash_repesentation = [each.toarray() for each in hash_repesentation]
         hash_repesentation = np.array([np.concatenate([h, np.zeros((step_length-length[l], feature_length))]) for l, h in enumerate(hash_repesentation)])
 
@@ -141,7 +141,7 @@ for epoch in range(nb_epoch):
 
     for j in range(number_of_dev_batches):
         dev_batch = dev_data[j*batch_size: (j+1)*batch_size]
-        embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=dev_batch, gram='tri', chunk_type='ALL')
+        embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=dev_batch, gram='bi', chunk_type='ALL')
         hash_repesentation = np.array([each.toarray() for each in hash_repesentation])
         hash_repesentation = np.array([np.concatenate([h, np.zeros((step_length-length[l], feature_length))]) for l, h in enumerate(hash_repesentation)])
 

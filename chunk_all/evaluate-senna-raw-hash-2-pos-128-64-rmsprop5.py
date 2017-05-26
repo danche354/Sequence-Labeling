@@ -24,7 +24,7 @@ np.random.seed(0)
 # input sentence dimensions
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
-feature_length = conf.chunk_feature_length
+feature_length = conf.chunk_feature_length_2
 
 IOB = conf.chunk_ALL_IOB_decode
 
@@ -54,7 +54,7 @@ model = load_model(model_path)
 print('loading model finished.')
 
 for each in test_data:
-    embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=[each], gram='tri', chunk_type='ALL')
+    embed_index, hash_repesentation, pos, label, length, sentence = prepare.prepare_chunk_raw(batch=[each], gram='bi', chunk_type='ALL')
     hash_repesentation = [each_h.toarray() for each_h in hash_repesentation]
     hash_repesentation = np.array([np.concatenate([h, np.zeros((step_length-length[l], feature_length))]) for l, h in enumerate(hash_repesentation)])
 
