@@ -115,7 +115,7 @@ def prepare_chunk_raw(batch, trigram=False, gram='tri', chunk_type='NP', step_le
             sequence_pos.append('#')
 
         _embedding_index = [embedding_dict.get(each.strip().lower(), emb_vocab+1) for each in sequence]
-        _hash_representation = hashing.sen2matrix(sequence, task="ner", gram=gram)
+        _hash_representation = hashing.sen2matrix(sequence, task="chunk", gram=gram)
         sentences.append(sentence[0])
         _pos = [chunk_POS[each] for each in sequence_pos]
         _label = [IOB[each] for each in sentence[2]]
