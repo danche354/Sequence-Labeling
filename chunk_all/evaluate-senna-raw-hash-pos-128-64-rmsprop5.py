@@ -24,7 +24,7 @@ np.random.seed(0)
 # input sentence dimensions
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
-feature_length = conf.chunk_feature_length_2
+feature_length = conf.chunk_feature_length
 
 IOB = conf.chunk_ALL_IOB_decode
 

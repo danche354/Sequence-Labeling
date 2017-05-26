@@ -28,7 +28,7 @@ np.random.seed(0)
 # train hyperparameters
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
-feature_length = conf.chunk_feature_length_2
+feature_length = conf.chunk_feature_length
 
 emb_vocab = conf.senna_vocab
 emb_length = conf.senna_length
