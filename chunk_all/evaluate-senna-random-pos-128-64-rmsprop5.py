@@ -26,6 +26,10 @@ pos_length = conf.chunk_pos_length
 IOB = conf.chunk_ALL_IOB_decode
 split_rate = conf.chunk_split_rate
 
+data = sys.argv[1]
+
+best_epoch = sys.argv[2]
+
 if data=="dev":
     train_data, test_data = load_data.load_chunk(dataset='train.txt', split_rate=split_rate)
 elif data == "test":
