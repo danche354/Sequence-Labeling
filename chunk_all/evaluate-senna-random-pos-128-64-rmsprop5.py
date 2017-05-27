@@ -19,6 +19,8 @@ from tools import conf
 from tools import load_data
 from tools import prepare
 
+np.random.seed(0)
+
 # input sentence dimensions
 step_length = conf.chunk_step_length
 pos_length = conf.chunk_pos_length
