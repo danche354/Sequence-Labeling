@@ -60,7 +60,7 @@ word_embedding = pd.read_csv('../preprocessing/senna/embeddings.txt', delimiter=
 word_embedding = word_embedding.values
 word_embedding = np.concatenate([np.zeros((1,emb_length)),word_embedding, np.random.uniform(-1,1,(1,emb_length))])
 
-random_embedding = pd.read_csv('../preprocessing/random/chunk-embeddings.txt', delimiter=' ', header=None)
+random_embedding = pd.read_csv('../preprocessing/random/chunk_embeddings.txt', delimiter=' ', header=None)
 random_embedding = hash_embedding.values
 random_embedding = np.concatenate([np.zeros((1,hash_length)),hash_embedding, np.random.rand(1,hash_length)])
 
