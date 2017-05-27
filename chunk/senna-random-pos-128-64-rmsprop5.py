@@ -68,7 +68,7 @@ embed_index_input = Input(shape=(step_length,))
 embedding = Embedding(emb_vocab+2, emb_length, weights=[word_embedding], mask_zero=True, input_length=step_length)(embed_index_input)
 
 hash_index_input = Input(shape=(step_length,))
-encoder_embedding = Embedding(hash_vocab+2, hash_length, weights=[hash_embedding], mask_zero=True, input_length=step_length)(hash_index_input)
+encoder_embedding = Embedding(hash_vocab+2, hash_length, weights=[random_embedding], mask_zero=True, input_length=step_length)(hash_index_input)
 
 pos_input = Input(shape=(step_length, pos_length))
 
