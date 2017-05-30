@@ -35,12 +35,11 @@ PCA_embedding = PCA_embedding.tolist()
 coordinate = list(zip(*PCA_embedding))
 
 color = ['b', 'r', 'y', 'g', 'c']
-marker = ['x', '^', '+', 'o', 's']
+marker = ['x', '1', '+', 'o', 's']
 
 for i in range(4):
     plt.scatter(coordinate[0][i*threshold:(i+1)*threshold], coordinate[1][i*threshold:(i+1)*threshold], marker=marker[i], c='k', )
 
-plt.title('Learned morphological representation.')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.grid(True)

@@ -72,10 +72,10 @@ print('loading model finished.')
 for each in test_data:
     embed_index, hash_index, pos, chunk, label, length, sentence = prepare.prepare_ner(batch=[each], gram='bi', form='BIOES')
     pos = np.array([(np.concatenate([np_utils.to_categorical(p, pos_length), np.zeros((step_length-length[l], pos_length))])) for l,p in enumerate(pos)])
-    chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
+    # chunk = np.array([(np.concatenate([np_utils.to_categorical(c, chunk_length), np.zeros((step_length-length[l], chunk_length))])) for l,c in enumerate(chunk)])
     gazetteer, length_2 = prepare.prepare_gazetteer(batch=[each])
     gazetteer = np.array([(np.concatenate([a, np.zeros((step_length-length_2[l], gazetteer_length))])) for l,a in enumerate(gazetteer)])
-    prob = model.predict_on_batch([embed_index, hash_index, pos, chunk, gazetteer])
+    prob = model.predict_on_batch([embed_index, hash_index, pos, gazetteer])
 
     for i, l in enumerate(length):
         predict_label = np_utils.categorical_probas_to_classes(prob[i])
@@ -86,14 +86,14 @@ for each in test_data:
     # convert
     word_pos_chunk = list(zip(*word_pos_chunk))
     word_pos_chunk = [list(x) for x in word_pos_chunk]
-    #if data == "test":
-     #   word_pos_chunk[3] = convert(word_pos_chunk[3])
+#    if data == "test":
+#        word_pos_chunk[3] = convert(word_pos_chunk[3])
     word_pos_chunk = list(zip(*word_pos_chunk))
 
     #convert
-    #if data == "test":
-     #   chunktags = convert(chunktags) 
-
+#    if data == "test":
+#        chunktags = convert(chunktags)
+    # chunktags = prepare.gazetteer_lookup(each[0], chunktags, data)
     for ind, chunktag in enumerate(chunktags):
         result.write(' '.join(word_pos_chunk[ind])+' '+chunktag+'\n')
     result.write('\n')
